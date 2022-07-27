@@ -15,19 +15,19 @@ public class Feather : BaseWeapon
     public override void Activate(PlayerBehavior player)
     {
         this.player = player;
-        player.isInvincible = true;
+        player.isFlying = true;
         player.SetBoolAnimator("isJumping", true);
         GameVariables.Instance.gameAudioSource.PlayOneShot(playerJump);
     }
 
    public void Update()
     {
-        if (player.isInvincible || jumpFinish)
+        if (player.isFlying || jumpFinish)
         {
             timer += Time.deltaTime;
             if (timer >= jumpDuration && !jumpFinish)
             {
-                player.isInvincible = false;
+                player.isFlying = false;
                 player.SetBoolAnimator("isJumping", false);
                 jumpFinish = true;
                 GameVariables.Instance.gameAudioSource.PlayOneShot(playerHitGround);

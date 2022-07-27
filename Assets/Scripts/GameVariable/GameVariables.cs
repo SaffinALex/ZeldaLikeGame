@@ -17,6 +17,8 @@ public class GameVariables : MonoBehaviour
     public bool pauseGame { get; set; }
     public GameObject dialogueBox { get; set; }
     public static GameVariables instance = null;
+    public InventoryBehavior inventory { get; set; }
+
     public static GameVariables Instance
     {
         get
@@ -37,6 +39,7 @@ public class GameVariables : MonoBehaviour
         gameAudioSource = GetComponent<AudioSource>();
         userInterfaceManager.LoadUI();
         loadManager.LoadLevel();
+        userInterfaceManager.LoadInventory();
     }
     private void Start()
     {
@@ -130,4 +133,6 @@ public class GameVariables : MonoBehaviour
             }
         }
     }
+
+
 }

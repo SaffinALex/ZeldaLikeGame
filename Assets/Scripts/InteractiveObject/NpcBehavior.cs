@@ -82,7 +82,7 @@ public class NpcBehavior : MonoBehaviour
             CheckDirectionBeforeNextPoint();
         }
 
-        if (dialogueBox.activeInHierarchy)
+        if (dialogueBox.activeInHierarchy && playerInRange)
         {
             timeLeft += Time.deltaTime;
             DisplayNpcText();

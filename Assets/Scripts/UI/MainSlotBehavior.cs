@@ -13,4 +13,11 @@ public class MainSlotBehavior : Slot
         if (isItemA) GameVariables.Instance.player.A = weapon.gameObject;
         else GameVariables.Instance.player.B = weapon.gameObject;
     }
+    public override void Refresh(int number)
+    {
+        base.Refresh(number);
+
+        if (isItemA) GameVariables.Instance.player.A = weapon.gameObject;
+        else GameVariables.Instance.player.B = weapon.gameObject;
+    }
 }

@@ -25,6 +25,8 @@ TagManager:
   - PlayerFeet
   - EnnemyFeet
   - KillingFloot
+  - Water
+  - DeepWater
   layers:
   - Default
   - TransparentFX

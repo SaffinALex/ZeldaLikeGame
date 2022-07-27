@@ -23,7 +23,6 @@ public class DestroyableObject : MonoBehaviour
     public void DestroyObject()
     {
         StartCoroutine(playDestroyedAnimation());
-       // Instantiate(listItemCanBeSpawned[Random.Range(0, listItemCanBeSpawned.Count)]);
     }
 
     public IEnumerator playDestroyedAnimation()
@@ -32,6 +31,7 @@ public class DestroyableObject : MonoBehaviour
         GetComponent<Animator>().SetBool("IsDestroyed", true);
         GetComponent<AudioSource>().PlayOneShot(sound);
         yield return new WaitForSeconds(0.01f);
+        Instantiate(listItemCanBeSpawned[Random.Range(0, listItemCanBeSpawned.Count)], transform);
         //Destroy(this.gameObject);
     }
 }

@@ -52,6 +52,18 @@ public class BasicEnemyBehavior : EnemiesBehavior
         }
     }
 
+    public void Sink(float sinkDuration)
+    {
+        StartCoroutine(WhenSink(sinkDuration));
+    }
+
+    private IEnumerator WhenSink(float sinkDuration)
+    {
+        canMove = false;
+        yield return new WaitForSeconds(sinkDuration);
+        gameObject.SetActive(false);
+    }
+
     public override void MoveToPlayer()
     {
         if (canMove)

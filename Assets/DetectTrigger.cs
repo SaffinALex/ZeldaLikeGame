@@ -8,7 +8,7 @@ public class DetectTrigger : MonoBehaviour
     public HoleBehavior hole;
     public void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("PlayerFeet"))
+        if (collision.CompareTag("PlayerFeet") && !GameVariables.Instance.player.GetBoolAnimator("isFalling"))
         {
             hole.WhenPlayerFall();
         }

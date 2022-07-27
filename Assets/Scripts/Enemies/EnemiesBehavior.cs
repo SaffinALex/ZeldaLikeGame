@@ -99,7 +99,7 @@ public abstract class EnemiesBehavior : MonoBehaviour
             }
         }
 
-        if (Vector3.Distance(player.position, transform.position) <= attackRange)
+        if (Vector3.Distance(player.position, transform.position) <= attackRange && !GetComponent<Animator>().GetBool("isInLava"))
         {
             player.gameObject.GetComponent<PlayerBehavior>().GetDamage(damage, transform);
         }
@@ -117,7 +117,7 @@ public abstract class EnemiesBehavior : MonoBehaviour
             GetComponent<Animator>().SetBool("isRecoveryTime", false);
             isPushBack = false;
         }
-        if (!isPushBack && isActiveTimer <= 0)
+        if (!isPushBack && isActiveTimer <= 0 && !GetComponent<Animator>().GetBool("isInLava"))
         {
             currentTime += Time.deltaTime;
             CurrentTimeToWait += Time.deltaTime;

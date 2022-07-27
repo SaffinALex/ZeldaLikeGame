@@ -9,7 +9,7 @@ public class Sword : BaseWeapon
     private float attackTime;
 
     private bool canAttack = true;
-
+    private float moveX, moveY;
     private PlayerBehavior player;
     public GameObject sprite;
     public AudioClip sound;
@@ -33,19 +33,19 @@ public class Sword : BaseWeapon
         yield return new WaitForSeconds(attackTime);
         player.gameObject.GetComponent<Animator>().SetBool("isAttack", false);
         player.CanMove = true;
-        sprite.SetActive(false);
+        GetComponent<Animator>().SetBool("isAttack", false);
         yield return new WaitForSeconds(0.1f);
         canAttack = true;
-        gameObject.SetActive(false);
+        Destroy(gameObject);
     }
     private void Attack()
     {
         if (canAttack)
         {
-            gameObject.SetActive(true);
             GameVariables.Instance.gameAudioSource.PlayOneShot(sound);
             sprite.SetActive(true);
             player.ReplaceDirection();
+            GetComponent<Animator>().SetBool("isAttack", true);
             player.gameObject.GetComponent<Animator>().SetBool("isAttack", true);
             player.CanMove = false;
             StartCoroutine(attackTimer());
@@ -56,6 +56,9 @@ public class Sword : BaseWeapon
     public override void Activate(PlayerBehavior player)
     {
         this.player = player;
+        player.ReplaceDirection();
+        GetComponent<Animator>().SetFloat("moveX", player.GetComponent<Animator>().GetFloat("MoveX"));
+        GetComponent<Animator>().SetFloat("moveY", player.GetComponent<Animator>().GetFloat("MoveY"));
         Attack();
     }
 }

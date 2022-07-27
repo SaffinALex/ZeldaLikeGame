@@ -35,10 +35,12 @@ public class Bomb : BaseWeapon
     public AudioClip hitGroundSound;
     public AudioClip explosion;
     private bool isUnGrap = false;
+    private bool isNotAvailable = false;
     public ShadowBehavior shadowPos;
     private Vector2 playerPosWhenLaunch;
     public AudioClip throwObject;
     public AudioClip carryBombAudio;
+    public AudioClip impossibleAudio;
     #endregion
 
     #region Trigger
@@ -215,27 +217,46 @@ public class Bomb : BaseWeapon
 
     void Update()
     {
-        CheckIfExplode();
+        if (isNotAvailable)
+        {
+            timeBeforeExplosion -= Time.deltaTime;
+            if (timeBeforeExplosion <= 0) Destroy(gameObject);
+        }
+        else
+        {
+            CheckIfExplode();
+        }
     }
     #endregion
 
     public override void Activate(PlayerBehavior player)
     {
-        if(player.CarryObject != null)
+        if (GameVariables.Instance.inventory.GetBomb() > 0)
         {
-            if (player.CarryObject.GetComponent<CarryItemBehavior>() != null) player.CarryObject.GetComponent<CarryItemBehavior>().UnGrap();
-            else if (player.CarryObject.GetComponent<Bomb>() != null) player.CarryObject.GetComponent<Bomb>().UnGrap();
-            player.CarryObject = gameObject;
+            GameVariables.Instance.inventory.RemoveBombs(1);
+            if (player.CarryObject != null)
+            {
+                if (player.CarryObject.GetComponent<CarryItemBehavior>() != null) player.CarryObject.GetComponent<CarryItemBehavior>().UnGrap();
+                else if (player.CarryObject.GetComponent<Bomb>() != null) player.CarryObject.GetComponent<Bomb>().UnGrap();
+                player.CarryObject = gameObject;
+            }
+            else player.CarryObject = gameObject;
+            this.player = player;
+            cptBounce = 0;
+            hasExplode = false;
+            player.SetBoolAnimator("isCarrying", true);
+            GameVariables.Instance.gameAudioSource.PlayOneShot(carryBombAudio);
+            nextPos = new Vector2(player.transform.position.x, player.transform.position.y + 16);
+            transform.position = nextPos;
+            shadowPos.transform.position = transform.position;
         }
-        else player.CarryObject = gameObject;
-        this.player = player;
-        cptBounce = 0;
-        hasExplode = false;
-        player.SetBoolAnimator("isCarrying", true);
-        GameVariables.Instance.gameAudioSource.PlayOneShot(carryBombAudio);
-        nextPos = new Vector2(player.transform.position.x, player.transform.position.y + 16);
-        transform.position = nextPos;
-        shadowPos.transform.position = transform.position;
+        else if(!isNotAvailable)
+        {
+            isNotAvailable = true;
+            timeBeforeExplosion = impossibleAudio.length;
+            GetComponent<Animator>().SetBool("isNotAvailable", true);
+            GameVariables.Instance.gameAudioSource.PlayOneShot(impossibleAudio);
+        }
     }
 
 

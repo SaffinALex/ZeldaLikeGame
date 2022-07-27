@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class HoleBehavior : MonoBehaviour
 {
-    private Vector2 oldPosition;
     private bool isAttracted;
     private List<GameObject> attractedObjects;
     public int damage;
@@ -22,7 +21,18 @@ public class HoleBehavior : MonoBehaviour
     {
         if (collision.CompareTag("PlayerFeet") && !GameVariables.Instance.player.isAttracted)
         {
+            attractedObjects.Add(collision.gameObject);
             isAttracted = true;
+        }
+        if (collision.CompareTag("EnnemyFeet") && !collision.transform.parent.GetComponent<EnemiesBehavior>().isAttracted)
+        {
+            attractedObjects.Add(collision.gameObject);
+        }
+    }
+    private void OnTriggerStay2D (Collider2D collision)
+    {
+        if (collision.CompareTag("PlayerFeet") && !GameVariables.Instance.player.isAttracted)
+        {
             attractedObjects.Add(collision.gameObject);
             isAttracted = true;
         }
@@ -49,7 +59,6 @@ public class HoleBehavior : MonoBehaviour
     void Start()
     {
         attractedObjects = new List<GameObject>();
-        oldPosition = GameVariables.Instance.player.transform.position;
     }
 
     // Update is called once per frame
@@ -58,7 +67,7 @@ public class HoleBehavior : MonoBehaviour
         foreach (GameObject g in attractedObjects)
         {
             float d = Vector2.Distance(g.transform.position, transform.position);
-            if (g.tag == "PlayerFeet" && !GameVariables.Instance.player.GetBoolAnimator("isFalling") && !GameVariables.Instance.player.isInvincible)
+            if (g.tag == "PlayerFeet" && !GameVariables.Instance.player.GetBoolAnimator("isFalling") && !GameVariables.Instance.player.isFlying && isAttracted)
             {
                 GameVariables.Instance.player.SetAttractedVector(Vector2.MoveTowards(g.transform.position, transform.position, fallSpeed * Time.deltaTime), Mathf.Lerp(coefMalusAttracted2, coefMalusAttracted1, d));
                 GameVariables.Instance.player.isAttracted = true;
@@ -75,30 +84,32 @@ public class HoleBehavior : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (!isAttracted) oldPosition = GameVariables.Instance.player.transform.position;
+
     }
 
     public void WhenPlayerFall()
     {
-        if(!GameVariables.Instance.player.isInvincible && !GameVariables.Instance.player.GetBoolAnimator("isFalling")) StartCoroutine(FallingPlayer());
+        if(!GameVariables.Instance.player.isFlying && !GameVariables.Instance.player.GetBoolAnimator("isFalling")) StartCoroutine(FallingPlayer());
     }
     public void WhenEnnemyFall(EnemiesBehavior e)
     {
-        StartCoroutine(FallingEnnemy(e));
+        if (!e.GetComponent<Animator>().GetBool("isFalling")) StartCoroutine(FallingEnnemy(e));
     }
     public IEnumerator FallingPlayer()
     {
         GameVariables.Instance.player.SetBoolAnimator("isFalling", true);
-        yield return new WaitForSeconds(fallDuration);
+        GameVariables.Instance.player.transform.position = transform.position;
         GameVariables.Instance.gameAudioSource.PlayOneShot(fallPlayerSound);
-        GameVariables.Instance.player.GiveDamageAndRespawn(damage, oldPosition);
-        GameVariables.Instance.player.SetBoolAnimator("isFalling", false);
+        yield return new WaitForSeconds(fallDuration);
+        GameVariables.Instance.player.GiveDamageAndRespawn(damage);
+        isAttracted = false;
     }
     public IEnumerator FallingEnnemy(EnemiesBehavior ennemy)
     {
         ennemy.GetComponent<Animator>().SetBool("isFalling", true);
-        yield return new WaitForSeconds(fallDuration);
+        ennemy.transform.position = transform.position;
         GameVariables.Instance.gameAudioSource.PlayOneShot(fallEnemySound);
+        yield return new WaitForSeconds(fallDuration);
         ennemy.gameObject.SetActive(false);
         ennemy.GetComponent<Animator>().SetBool("isFalling", false);
     }

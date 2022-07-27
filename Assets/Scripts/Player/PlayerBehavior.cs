@@ -48,10 +48,17 @@ public class PlayerBehavior : MonoBehaviour
     public GameObject CarryObject;
     private Vector2 attractedVector;
     private float coefWhenAttracted;
+    private List<RespawnPos> listSavePos;
+    private int indexListSavePos;
+    public struct RespawnPos
+    {
+        public float time;
+        public Vector2 position;
+    }
     public GameObject A, B;
     public  bool isAttracted { get; set; }
     public Vector2 positionToRespawn { get; set; }
-    public bool isInvincible { get; set; }
+    public bool isFlying { get; set; }
     // Start is called before the first frame update
 
         #region position
@@ -171,6 +178,12 @@ public class PlayerBehavior : MonoBehaviour
         oldPosition = Vector3.zero;
         CarryObject = null;
         attractedVector = Vector2.zero;
+        indexListSavePos = 0;
+        listSavePos = new List<RespawnPos>();
+        for(int i = 0; i < 5; i++)
+        {
+            listSavePos.Add(new RespawnPos());
+        }
     }
 
     private void Update()
@@ -191,17 +204,34 @@ public class PlayerBehavior : MonoBehaviour
         animator = GetComponent<Animator>();
         GameObject.FindGameObjectsWithTag("PushingObject");
         GameStateManager.Instance.OnGameStateChanged += OnGameStateChanged;
+        GameVariables.Instance.inventory.SetMaxVisibleHeart(initialLifePoint);
 
     }
     private void FixedUpdate()
     {
         CheckIfCanMove();
+        if (indexListSavePos >= 5) indexListSavePos = 0;
+        if (CanMove && !GetBoolAnimator("isJumping"))
+        {
+            RespawnPos rp = listSavePos[indexListSavePos];
+            rp.time = Time.realtimeSinceStartup;
+            rp.position = transform.position;
+            listSavePos[indexListSavePos] = rp;
+            indexListSavePos++;
+        }
+        if(GetBoolAnimator("isJumping") || GetBoolAnimator("isInLava")  || GetBoolAnimator("isFalling"))
+        {
+            if(CarryObject != null)
+            {
+                CarryObject.GetComponent<CarryItemBehavior>().UnGrap();
+            }
+        }
         if (CanMove)
         {
             MoveCharacter();
             if (Input.GetKey(KeyCode.A))
             {
-                if (objectA == null && A.GetComponent<Sword>()== null && A.GetComponent<CarryWeapon>() == null && A.GetComponent<EmptyWeapon>() == null)
+                if (objectA == null  && A.GetComponent<CarryWeapon>() == null && A.GetComponent<EmptyWeapon>() == null)
                 {
                     objectA = Instantiate(A, transform);
                    // objectA.transform.parent = gameObject.transform;
@@ -245,18 +275,18 @@ public class PlayerBehavior : MonoBehaviour
         {
             transform.position = Vector2.MoveTowards(transform.position, targetEnemy, -pushbackSpeed * Time.deltaTime);
         }
-        if (isAttracted && !isInvincible)
+        if (isAttracted && !isFlying)
         {
             Vector3 newPosition = attractedVector;
               if(animator.GetBool("IsMoving"))
               {
-                  newPosition += (new Vector3(moveX, moveY, 0) * characterSpeed * coefWhenAttracted * Time.deltaTime);
-                  playMovement = false;
+                 newPosition += (new Vector3(moveX, moveY, 0) * characterSpeed * Time.deltaTime);
+                 playMovement = false;
               } 
-           GetComponent<Rigidbody2D>().MovePosition(newPosition); 
-           // transform.position = newPosition;
+         //  GetComponent<Rigidbody2D>().MovePosition(newPosition); 
+           transform.position = newPosition;
         }
-        if(isInvincible){
+        if(isFlying){
             isAttracted = false;
         }
 
@@ -264,7 +294,7 @@ public class PlayerBehavior : MonoBehaviour
 
     private void CheckIfCanMove()
     {
-        bool t = !GameVariables.Instance.cameraSwipe &&!animator.GetBool("isGrabbing") && !animator.GetBool("isAttack") && !animator.GetBool("UseWeapon");
+        bool t = !GameVariables.Instance.cameraSwipe &&!animator.GetBool("isGrabbing") && !animator.GetBool("isAttack") && !animator.GetBool("UseWeapon") && !animator.GetBool("isFalling") && !animator.GetBool("isInLava");
         CanMove = t;
     }
     public Vector2 GetVectorMove()
@@ -295,27 +325,37 @@ public class PlayerBehavior : MonoBehaviour
     #endregion
 
     #region Damage
-    public void GiveDamageAndRespawn(int damage, Vector2 oldPosition)
+    public void GiveDamageAndRespawn(int damage)
     {
-        if (!isInvincible)
+        if (!isFlying && CanMove)
         {
             if (timeRecoveryTimer <= 0)
             {
                 currentLifePoint -= damage;
+                GameVariables.Instance.inventory.SetHeart(currentLifePoint);
             }
             timeRecoveryTimer = timeRecovery;
-            transform.position = positionToRespawn;
+            RespawnPos respawnPoint = listSavePos[0];
+            foreach(RespawnPos rp in listSavePos)
+            {
+                if (rp.time < respawnPoint.time) respawnPoint = rp;
+            }
+
+            transform.position = respawnPoint.position;
+            isAttracted = false;
+            GameVariables.Instance.player.SetBoolAnimator("isFalling", false);
         }
     }
 
     public void GetDamage(int dmg, Transform target)
     {
-        if (timeRecoveryTimer <= 0 && !isInvincible)
+        if (timeRecoveryTimer <= 0 && !isFlying && !GetBoolAnimator("isFalling") && CanMove)
         {
             isPushBack = true;
             currentLifePoint -= dmg;
             timeRecoveryTimer = timeRecovery;
             GameVariables.Instance.gameAudioSource.PlayOneShot(hitSound);
+            GameVariables.Instance.inventory.SetHeart(currentLifePoint);
             targetEnemy = target.position;
         }
     }
@@ -342,8 +382,45 @@ public class PlayerBehavior : MonoBehaviour
 
     public void OnGameStateChanged(GameStateManager.GameState gameState)
     {
-        if (gameState == GameStateManager.GameState.Pause) enabled = false;
+        if (gameState == GameStateManager.GameState.Pause || gameState == GameStateManager.GameState.Talking) enabled = false;
         else if (gameState == GameStateManager.GameState.Playing) enabled = true;
     }
 
+    public void sinkPlayer(int dmg, float time)
+    {
+        if (!isFlying)
+        {
+            if (timeRecoveryTimer <= 0)
+            {
+                currentLifePoint -= dmg;
+                GameVariables.Instance.inventory.SetHeart(currentLifePoint);
+            }
+            timeRecoveryTimer = timeRecovery;
+
+
+            CanMove = false;
+            StartCoroutine(WhenPlayerSink(time));
+        }
+    }
+
+    public IEnumerator WhenPlayerSink(float time)
+    {
+        RespawnPos respawnPoint = listSavePos[0];
+        foreach (RespawnPos rp in listSavePos)
+        {
+            if (rp.time < respawnPoint.time) respawnPoint = rp;
+        }
+        yield return new WaitForSeconds(time);
+        transform.position = respawnPoint.position;
+        GameVariables.Instance.player.SetBoolAnimator("isInLava", false);
+        CanMove = true;
+    }
+    #region DEBUG
+#if UNITY_EDITOR
+    private void OnDrawGizmos()
+    {
+
+    }
+#endif
+    #endregion
 }
