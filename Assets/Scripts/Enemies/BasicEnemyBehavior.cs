@@ -6,6 +6,7 @@ using UnityEngine.Events;
 public class BasicEnemyBehavior : EnemiesBehavior
 {
 
+
     public override void SetAttractedVector(Vector2 normalized, float coefWhenAttracted)
     {
         attractedVector = normalized;
@@ -19,8 +20,9 @@ public class BasicEnemyBehavior : EnemiesBehavior
 
     public override void MoveRandomly()
     {
-        if ((target == Vector2.zero || (Vector2)transform.position == target) )
+        if ((target == Vector2.zero || timerToRefreshTarget >= delayToRefreshTarget))
         {
+            timerToRefreshTarget = 0;
             CurrentTimeToWait = 0;
             canMove = false;
             int nbr = Random.Range(0, 3);
@@ -44,6 +46,10 @@ public class BasicEnemyBehavior : EnemiesBehavior
                 target = new Vector2(transform.position.x, transform.position.y - caseSize * numberOfMovingCase);
                 currentDirection = Position.Down;
             }
+        }
+        else
+        {
+            timerToRefreshTarget += Time.deltaTime;
         }
         if (canMove)
         {

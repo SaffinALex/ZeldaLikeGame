@@ -134,6 +134,7 @@ MonoBehaviour:
   CarryObject: {fileID: 0}
   A: {fileID: 7009482590225143912, guid: abdc2e1fd6312ac448ae54308a256565, type: 3}
   B: {fileID: 7009482590225143912, guid: abdc2e1fd6312ac448ae54308a256565, type: 3}
+  delayBetweenItemUse: 1
 --- !u!212 &520402131059464906
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -367,7 +368,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.0016233623, y: -0.30519474}
+  m_Offset: {x: -0.0016233921, y: -0.33131582}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -378,7 +379,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.5551948, y: 0.38961053}
+  m_Size: {x: 0.3163737, y: 0.18810523}
   m_EdgeRadius: 0
 --- !u!1 &4172444932191307071
 GameObject:

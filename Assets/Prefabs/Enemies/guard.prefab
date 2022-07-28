@@ -29,7 +29,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4370011628098278952}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 70.3, y: -7.2, z: 0}
+  m_LocalPosition: {x: 19.057266, y: -122.64667, z: 0}
   m_LocalScale: {x: 16, y: 16, z: 1}
   m_Children:
   - {fileID: 8368670856476958754}
@@ -49,11 +49,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 7
-  initialLife: 20
+  initialLife: 1
   timeRecovery: 0.25
   speed: 30
-  rangeDetection: 20.41
-  attackRange: 26.77
+  rangeDetection: 64
+  attackRange: 16
+  delayToRefreshTarget: 3
   pushbackSpeed: 150
   caseSize: 16
   numberOfMovingCase: 2

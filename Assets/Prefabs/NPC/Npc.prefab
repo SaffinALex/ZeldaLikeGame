@@ -63,10 +63,23 @@ MonoBehaviour:
   - {fileID: -8972886777763792227, guid: 1f499e3bccaedd84fae31e693b09da99, type: 3}
   timeRefresh: 0.2
   roundTrip: 1
-  path: []
-  isMoving: 0
+  path:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  isMoving: 1
   speed: 20
-  text: 
+  dialogues:
+  - "cour \xE7a va ?"
+  - Moi oui !
+  dialogueBox: {fileID: 0}
+  inputDelay: 0.1
+  maximumLetterByLine: 0
+  delayToDisplayLetter: 0.1
+  letterDialogue: {fileID: 8300000, guid: 5889cd0f5bacb4744b31b686e8cec955, type: 3}
+  nextDialogue: {fileID: 8300000, guid: 9939ff2052ada8541a884003fcf356d9, type: 3}
+  audioSource: {fileID: 0}
+  textUI: {fileID: 0}
   baseDirection: 1
 --- !u!212 &2104245074776178789
 SpriteRenderer:
@@ -83,6 +96,7 @@ SpriteRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:

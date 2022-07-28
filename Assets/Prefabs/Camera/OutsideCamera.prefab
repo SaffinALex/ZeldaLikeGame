@@ -309,9 +309,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9123825641772268832}
-  - component: {fileID: 9123825641772268834}
   - component: {fileID: 1403864545588692678}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: OutsideCamera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
@@ -336,14 +335,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!81 &9123825641772268834
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9123825641772268837}
-  m_Enabled: 1
 --- !u!114 &1403864545588692678
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -356,8 +347,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a27d9a30c307e8f42820baccc814d88e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameraLerpSpeed: 1
-  numberCaseSwipeUp: 9
-  numberCaseSwipeDown: 9
-  numberCaseSwipeLeft: 9
-  numberCaseSwipeRight: 9
+  cameraLerpSpeed: 160
+  numberCaseSwipeUp: 144
+  numberCaseSwipeDown: 144
+  numberCaseSwipeLeft: 144
+  numberCaseSwipeRight: 144
+  cameraCollider:
+  - {fileID: 3680679973529685477}
+  - {fileID: 6535998629548290203}
+  - {fileID: 4380020722407041920}
+  - {fileID: 3373412428972475010}

@@ -9,6 +9,7 @@ public class DestroyableObject : MonoBehaviour
     [SerializeField]
     private List<GameObject> listItemCanBeSpawned;
     public AudioClip sound;
+    public int itemRate;
     private void OnBecameVisible()
     {
         new GameVariables.TriggerEvent("ResetObject" + gameObject.GetInstanceID().ToString(), ResetObject);
@@ -31,7 +32,7 @@ public class DestroyableObject : MonoBehaviour
         GetComponent<Animator>().SetBool("IsDestroyed", true);
         GetComponent<AudioSource>().PlayOneShot(sound);
         yield return new WaitForSeconds(0.01f);
-        Instantiate(listItemCanBeSpawned[Random.Range(0, listItemCanBeSpawned.Count)], transform);
+        if (Random.Range(0, 100) < itemRate) Instantiate(listItemCanBeSpawned[Random.Range(0, listItemCanBeSpawned.Count)], transform);
         //Destroy(this.gameObject);
     }
 }

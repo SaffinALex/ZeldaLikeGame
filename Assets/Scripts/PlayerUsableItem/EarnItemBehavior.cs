@@ -31,6 +31,6 @@ public class EarnItemBehavior : MonoBehaviour
         if (isKey) GameVariables.Instance.inventory.AddKeys(quantity);
         if (isBomb) GameVariables.Instance.inventory.AddBombs(quantity);
         if (isArrow) GameVariables.Instance.inventory.AddArrows(quantity);
-        GameVariables.Instance.gameAudioSource.PlayOneShot(playSoundWhenGet);
     }
+
 }

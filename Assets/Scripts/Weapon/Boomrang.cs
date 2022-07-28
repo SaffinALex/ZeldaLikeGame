@@ -24,6 +24,10 @@ public class Boomrang : BaseWeapon
             }
             reversePath = true;
         }
+        if (collision.gameObject.GetComponent<DestroyableObject>() != null)
+        {
+            collision.gameObject.GetComponent<DestroyableObject>().DestroyObject();
+        }
     }
 
     public void FixedUpdate()

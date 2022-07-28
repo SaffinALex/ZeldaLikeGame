@@ -112,7 +112,7 @@ public class InventoryBehavior : MonoBehaviour
                 GameVariables.Instance.gameAudioSource.PlayOneShot(moveSelector);
                 canMoveSelector = false;
             }
-            Debug.Log(" " + index_x + " " + index_y);
+      
             if (Input.GetKeyDown(KeyCode.A))
             {
                 BaseWeapon tmp = slotA.weapon;
@@ -183,7 +183,7 @@ public class InventoryBehavior : MonoBehaviour
             selector.transform.position = beginSelectorPos;
             GameVariables.Instance.gameAudioSource.PlayOneShot(openMenu);
         }
-        else if (gameState == GameStateManager.GameState.Playing)
+        else if (gameState == GameStateManager.GameState.Playing && inventoryUI.activeInHierarchy)
         {
             GameVariables.Instance.gameAudioSource.PlayOneShot(closeMenu);
             inventoryUI.SetActive(false);

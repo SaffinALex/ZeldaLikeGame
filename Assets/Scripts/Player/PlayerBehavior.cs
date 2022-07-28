@@ -59,6 +59,9 @@ public class PlayerBehavior : MonoBehaviour
     public  bool isAttracted { get; set; }
     public Vector2 positionToRespawn { get; set; }
     public bool isFlying { get; set; }
+
+    public float delayBetweenItemUse;
+    private float timerDelayBetweenItemUse;
     // Start is called before the first frame update
 
         #region position
@@ -184,6 +187,7 @@ public class PlayerBehavior : MonoBehaviour
         {
             listSavePos.Add(new RespawnPos());
         }
+        timerDelayBetweenItemUse = 0;
     }
 
     private void Update()
@@ -193,6 +197,7 @@ public class PlayerBehavior : MonoBehaviour
             timeRecoveryTimer -= Time.deltaTime;
         }
         if (timeRecoveryTimer <= 0 && isPushBack) isPushBack = false;
+        timerDelayBetweenItemUse += Time.deltaTime;
     }
     private void OnDestroy()
     {
@@ -210,7 +215,7 @@ public class PlayerBehavior : MonoBehaviour
     private void FixedUpdate()
     {
         CheckIfCanMove();
-        if (indexListSavePos >= 5) indexListSavePos = 0;
+
         if (CanMove && !GetBoolAnimator("isJumping"))
         {
             RespawnPos rp = listSavePos[indexListSavePos];
@@ -218,7 +223,9 @@ public class PlayerBehavior : MonoBehaviour
             rp.position = transform.position;
             listSavePos[indexListSavePos] = rp;
             indexListSavePos++;
+            if (indexListSavePos >= 5) indexListSavePos = 0;
         }
+
         if(GetBoolAnimator("isJumping") || GetBoolAnimator("isInLava")  || GetBoolAnimator("isFalling"))
         {
             if(CarryObject != null)
@@ -226,55 +233,35 @@ public class PlayerBehavior : MonoBehaviour
                 CarryObject.GetComponent<CarryItemBehavior>().UnGrap();
             }
         }
+
         if (CanMove)
         {
             MoveCharacter();
-            if (Input.GetKey(KeyCode.A))
-            {
-                if (objectA == null  && A.GetComponent<CarryWeapon>() == null && A.GetComponent<EmptyWeapon>() == null)
-                {
-                    objectA = Instantiate(A, transform);
-                   // objectA.transform.parent = gameObject.transform;
-                    objectA.GetComponent<BaseWeapon>().Activate(this);
-                }
-                else if (objectA == null)
-                {
-                    A.GetComponent<BaseWeapon>().Activate(this);
-                }
-            }
-            if (Input.GetKey(KeyCode.B))
-            {
-                if (objectB == null && A.GetComponent<Sword>() == null && B.GetComponent<CarryWeapon>() == null && B.GetComponent<EmptyWeapon>() == null)
-                {
-                    objectB = Instantiate(B, transform);
-                    // objectA.transform.parent = gameObject.transform;
-                    objectB.GetComponent<BaseWeapon>().Activate(this);
-                }
-                else if (objectB == null)
-                {
-                    B.GetComponent<BaseWeapon>().Activate(this);
-                }
-            }
+            UseItem(KeyCode.A, objectA, A);
+            UseItem(KeyCode.B, objectB, B);
         }
         else
         {
             animator.SetBool("IsMoving", false);
         }
+
         if (!animator.GetBool("IsMoving"))
         {
             animator.SetBool("IsPushing", false);
             ReplaceDirection();
         }
-        if (CanMove && !GameVariables.Instance.cameraSwipe && animator.GetBool("IsMoving") && playMovement && !isPushBack && !isAttracted) 
+
+        if (CanMove && !GameVariables.Instance.cameraSwipe && animator.GetBool("IsMoving") && playMovement && !isPushBack && !isAttracted)
         {
             Vector3 newPosition = transform.position + ((new Vector3(moveX, moveY, 0) + (Vector3)smoothVectorMovement).normalized * characterSpeed * Time.deltaTime);
             GetComponent<Rigidbody2D>().MovePosition(newPosition);
             playMovement = false;
         }
-        else if (isPushBack)
+        else if (isPushBack && !GetBoolAnimator("isInLava"))
         {
             transform.position = Vector2.MoveTowards(transform.position, targetEnemy, -pushbackSpeed * Time.deltaTime);
         }
+
         if (isAttracted && !isFlying)
         {
             Vector3 newPosition = attractedVector;
@@ -283,13 +270,32 @@ public class PlayerBehavior : MonoBehaviour
                  newPosition += (new Vector3(moveX, moveY, 0) * characterSpeed * Time.deltaTime);
                  playMovement = false;
               } 
-         //  GetComponent<Rigidbody2D>().MovePosition(newPosition); 
            transform.position = newPosition;
         }
+
         if(isFlying){
             isAttracted = false;
         }
 
+    }
+
+    private void UseItem(KeyCode a1, GameObject objectA, GameObject A)
+    {
+        if (Input.GetKey(a1) && timerDelayBetweenItemUse >= delayBetweenItemUse)
+        {
+            if (objectA == null && A.GetComponent<CarryWeapon>() == null && A.GetComponent<EmptyWeapon>() == null)
+            {
+                objectA = Instantiate(A, transform);
+                // objectA.transform.parent = gameObject.transform;
+                objectA.GetComponent<BaseWeapon>().Activate(this);
+                timerDelayBetweenItemUse = 0;
+            }
+            else if (objectA == null)
+            {
+                A.GetComponent<BaseWeapon>().Activate(this);
+                timerDelayBetweenItemUse = 0;
+            }
+        }
     }
 
     private void CheckIfCanMove()

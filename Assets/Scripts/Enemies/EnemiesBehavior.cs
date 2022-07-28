@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
@@ -15,7 +16,8 @@ public abstract class EnemiesBehavior : MonoBehaviour
     public float speed;
     public float rangeDetection;
     public float attackRange;
-
+    public float delayToRefreshTarget;
+    public float timerToRefreshTarget { get; set; }
     public float pushbackSpeed;
     public bool isPushBack { get; set; }
     #endregion
@@ -58,9 +60,25 @@ public abstract class EnemiesBehavior : MonoBehaviour
     public Vector2 attractedVector { get; set; }
     #endregion
     #region PositionVar
-    private Transform initialPos;
+    private Vector3 initialPos;
     #endregion
 
+    public void OnBecameInvisible()
+    {
+        Reset();
+        enabled = false;
+    }
+
+    private void Reset()
+    {
+        currentLife = initialLife;
+        transform.position = initialPos;
+    }
+
+    public void OnBecameVisible()
+    {
+        enabled = true;
+    }
     public abstract void SetAttractedVector(Vector2 normalized, float coefWhenAttracted);
     #endregion
     // Start is called before the first frame update
@@ -69,7 +87,7 @@ public abstract class EnemiesBehavior : MonoBehaviour
         currentSprite = GetComponent<SpriteRenderer>();
         currentTime = 0;
         target = Vector2.zero;
-        initialPos = transform;
+        initialPos = transform.position;
         isActiveTimer = 0;
         currentLife = initialLife;
         timeRecoveryTimer = 0;
@@ -211,7 +229,7 @@ public abstract class EnemiesBehavior : MonoBehaviour
 
     public void OnGameStateChanged(GameStateManager.GameState gameState)
     {
-        if (gameState == GameStateManager.GameState.Pause || gameState == GameStateManager.GameState.Talking) enabled = false;
+        if (gameState == GameStateManager.GameState.Pause || gameState == GameStateManager.GameState.Talking || gameState == GameStateManager.GameState.SwipeCamera) enabled = false;
         else if (gameState == GameStateManager.GameState.Playing) enabled = true;
     }
     private void OnDestroy()

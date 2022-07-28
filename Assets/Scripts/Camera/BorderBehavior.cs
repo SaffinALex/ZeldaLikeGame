@@ -16,7 +16,7 @@ public class BorderBehavior : MonoBehaviour
         if(collision.gameObject.CompareTag("Player") && !GameVariables.Instance.cameraSwipe)
         {
             Debug.Assert(collision.gameObject.GetComponent<PlayerBehavior>() != null, "gameObject is not PlayerBehavior");
-
+            GameStateManager.Instance.SetState(GameStateManager.GameState.SwipeCamera);
             if (isBorderDown && GameVariables.Instance.player.LookDown())
                 mainCamera.swipeToDown();
             else if (isBorderLeft && GameVariables.Instance.player.LookLeft())

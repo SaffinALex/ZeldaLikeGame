@@ -50,7 +50,11 @@ public class Bomb : BaseWeapon
         {
             collision.GetComponent<EnemiesBehavior>().GetDamage(damage);
         }
+        if (collision.gameObject.GetComponent<DestroyableObject>() != null)
+        {
+            collision.gameObject.GetComponent<DestroyableObject>().DestroyObject();
 
+        }
     }
     private void OnTriggerStay2D(Collider2D collision)
     {
@@ -256,6 +260,7 @@ public class Bomb : BaseWeapon
             timeBeforeExplosion = impossibleAudio.length;
             GetComponent<Animator>().SetBool("isNotAvailable", true);
             GameVariables.Instance.gameAudioSource.PlayOneShot(impossibleAudio);
+            Destroy(gameObject);
         }
     }
 

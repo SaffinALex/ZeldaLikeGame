@@ -91,7 +91,7 @@ public class PushingObject : MonoBehaviour
     {
         isPushing = false;
         canPlayAudio = true;
-        GetComponent<AudioSource>().pitch -= Time.deltaTime * 1 / objectPushSpeed;
+  //      GetComponent<AudioSource>().pitch -= Time.deltaTime * 1 / objectPushSpeed;
 
     }
     private void FixedUpdate()

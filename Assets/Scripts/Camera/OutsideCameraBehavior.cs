@@ -11,6 +11,7 @@ public class OutsideCameraBehavior : MonoBehaviour
     private bool swipeUp, swipeDown, swipeLeft, swipeRight;
     private bool canMove;
     private Vector2 finalPositionSwipe;
+    public BoxCollider2D[] cameraCollider;
 
 
     public void swipeToDown( )
@@ -45,7 +46,7 @@ public class OutsideCameraBehavior : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        GameStateManager.Instance.OnGameStateChanged += OnGameStateChanged;
     }
 
     private void FixedUpdate()
@@ -93,6 +94,7 @@ public class OutsideCameraBehavior : MonoBehaviour
             if((Vector2)transform.position == finalPositionSwipe)
             {
                 GameVariables.Instance.cameraSwipe = false;
+                GameStateManager.Instance.SetState(GameStateManager.GameState.Playing);
                 swipeDown = swipeLeft = swipeRight = swipeDown = false;
             }
         }
@@ -101,5 +103,17 @@ public class OutsideCameraBehavior : MonoBehaviour
     void Update()
     {
       
+    }
+
+    public void OnGameStateChanged(GameStateManager.GameState gameState)
+    {
+        if(gameState == GameStateManager.GameState.SwipeCamera)
+        {
+            foreach (BoxCollider2D b in cameraCollider) b.enabled = false;
+        }
+        else if (gameState == GameStateManager.GameState.Playing)
+        {
+            foreach (BoxCollider2D b in cameraCollider) b.enabled = true;
+        }
     }
 }

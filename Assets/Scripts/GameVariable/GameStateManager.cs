@@ -9,7 +9,8 @@ public class GameStateManager
         Playing,
         Pause,
         Menu,
-        Talking
+        Talking,
+        SwipeCamera
     }
     private static GameStateManager instance;
     public static GameStateManager Instance
