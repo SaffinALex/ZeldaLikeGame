@@ -5,63 +5,29 @@ using UnityEngine;
 public class SmoothCollision : MonoBehaviour
 {
     [SerializeField]
-    private bool colliderUpLeftTouching, colliderUpRightTouching, colliderDownLeftTouching, colliderDownRightTouching;
+    public InteractiveCollider colliderUpLeft, colliderUpRight, colliderDownLeft, colliderDownRight;
 
     [SerializeField]
     private float playerSmoothMovementSpeed;
 
 
 
-    public void UpdateCollisionStatus(InteractiveCollider.Position position)
-    {
-        switch (position)
-        {
-            case InteractiveCollider.Position.DownLeft:
-                colliderDownLeftTouching = true;
-                break;
-            case InteractiveCollider.Position.DownRight:
-                colliderDownRightTouching = true;
-                break;
-            case InteractiveCollider.Position.UpLeft:
-                colliderUpLeftTouching = true;
-                break;
-            case InteractiveCollider.Position.UpRight:
-                colliderUpRightTouching = true;
-                break;
-        }
-    }
-
-    public void UpdateCollisionStatusWhenExit(InteractiveCollider.Position position)
-    {
-        switch (position)
-        {
-            case InteractiveCollider.Position.DownLeft:
-                colliderDownLeftTouching = false;
-                break;
-            case InteractiveCollider.Position.DownRight:
-                colliderDownRightTouching = false;
-                break;
-            case InteractiveCollider.Position.UpLeft:
-                colliderUpLeftTouching = false;
-                break;
-            case InteractiveCollider.Position.UpRight:
-                colliderUpRightTouching = false;
-                break;
-        }
-    }
     #region lifetime
-    public void Awake()
+    private void Update()
     {
-
-    }
-    public void Start()
-    {
-        InteractiveCollider.collisionEvent.AddListener(UpdateCollisionStatus);
-        InteractiveCollider.collisionEventExit.AddListener(UpdateCollisionStatusWhenExit);
+        if((colliderDownLeft.IsCollide && colliderDownRight.IsCollide) || (colliderDownRight.IsCollide && colliderUpRight.IsCollide) || (colliderUpRight.IsCollide && colliderUpLeft.IsCollide) 
+            || (colliderDownLeft.IsCollide && colliderUpLeft))
+        {
+            GameVariables.Instance.player.SetBoolAnimator("IsPushing", true);
+        }
+        else
+        {
+            GameVariables.Instance.player.SetBoolAnimator("IsPushing", false);
+        }
     }
     public void FixedUpdate()
     {
-        if (colliderDownLeftTouching && !colliderDownRightTouching)
+        if (colliderDownLeft.IsCollide && !colliderDownRight.IsCollide)
         {
             if (GameVariables.Instance.player.LookDown())
                 GameVariables.Instance.player.SetSmoothMovement(new Vector2(playerSmoothMovementSpeed, 0));
@@ -70,7 +36,7 @@ public class SmoothCollision : MonoBehaviour
             else
                 GameVariables.Instance.player.SetSmoothMovement(new Vector2(0, 0));
         }
-        else if (!colliderDownLeftTouching && colliderDownRightTouching)
+        else if (!colliderDownLeft.IsCollide && colliderDownRight.IsCollide)
         {
             if (GameVariables.Instance.player.LookDown())
                 GameVariables.Instance.player.SetSmoothMovement(new Vector2(-playerSmoothMovementSpeed, 0));
@@ -79,7 +45,7 @@ public class SmoothCollision : MonoBehaviour
             else
                 GameVariables.Instance.player.SetSmoothMovement(new Vector2(0, 0));
         }
-        else if (!colliderUpRightTouching && colliderUpLeftTouching)
+        else if (!colliderUpRight.IsCollide && colliderUpLeft.IsCollide)
         {
 
             if (GameVariables.Instance.player.LookUp())
@@ -91,7 +57,7 @@ public class SmoothCollision : MonoBehaviour
             else
                 GameVariables.Instance.player.SetSmoothMovement(new Vector2(0, 0));
         }
-        else if (colliderUpRightTouching && !colliderUpLeftTouching)
+        else if (colliderUpRight.IsCollide && !colliderUpLeft.IsCollide)
         {
             if (GameVariables.Instance.player.LookUp())
                 GameVariables.Instance.player.SetSmoothMovement(new Vector2(-playerSmoothMovementSpeed, 0));
@@ -104,16 +70,11 @@ public class SmoothCollision : MonoBehaviour
         {
             GameVariables.Instance.player.SetSmoothMovement(new Vector2(0, 0));
         }
-        if ((colliderUpLeftTouching && colliderDownLeftTouching) || (colliderDownRightTouching && colliderUpRightTouching))
+        if ((colliderUpLeft.IsCollide && colliderDownLeft.IsCollide) || (colliderDownRight.IsCollide && colliderUpRight.IsCollide))
         {
             GameVariables.Instance.player.SetSmoothMovement(new Vector2(0, 0));
-            //  GameVariables.Instance.player.SetPositionToOld();
         }
     }
 
-    public void Update()
-    {
-
-    }
     #endregion
 }

@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 6635315048080948914}
   m_Layer: 11
   m_Name: boomrang
-  m_TagString: Untagged
+  m_TagString: Weapon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -50,6 +50,7 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 66f4360d9f6ca9d488ffc271dc2d1e32, type: 3}
   name: Boomrang
   isEnable: 1
+  needToBeInstantiate: 0
   range: 80
   speed: 120
   effectTime: 3
@@ -70,6 +71,7 @@ SpriteRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:

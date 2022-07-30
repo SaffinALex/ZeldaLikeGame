@@ -14,6 +14,7 @@ public class GameVariables : MonoBehaviour
     public AudioSource gameAudioSource { get; set; }
     public LoadManager loadManager;
     public UserInterfaceManager userInterfaceManager;
+    public AudioSource musicPlayer;
     public bool pauseGame { get; set; }
     public GameObject dialogueBox { get; set; }
     public static GameVariables instance = null;
@@ -26,6 +27,9 @@ public class GameVariables : MonoBehaviour
             return instance;
         }
     }
+
+    public bool switchIsRed;
+
     private void Awake()
     {
         if (instance == null)
@@ -57,6 +61,13 @@ public class GameVariables : MonoBehaviour
         }
     }
 
+    public void LoadLevel(HouseTPData data)
+    {
+        loadManager.LoadLevel(data);
+        musicPlayer.Stop();
+        musicPlayer.PlayOneShot(data.ambientMusic);
+        
+    }
 
     public void CreateTriggerEvent(string name, OnEvent callback)
     {

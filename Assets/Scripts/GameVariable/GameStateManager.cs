@@ -22,12 +22,14 @@ public class GameStateManager
         }
     }
     public GameState CurrentGameState { get; private set; }
+    public GameState PreviousGameState { get; private set; }
     public delegate void GameStateChangeHandler(GameState gameState);
     public event GameStateChangeHandler OnGameStateChanged;
 
     public void SetState(GameState gameState)
     {
         if (CurrentGameState == gameState) return;
+        PreviousGameState = CurrentGameState;
         CurrentGameState = gameState;
         OnGameStateChanged?.Invoke(gameState);
     }

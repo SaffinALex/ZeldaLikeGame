@@ -53,7 +53,11 @@ public class BasicEnemyBehavior : EnemiesBehavior
         }
         if (canMove)
         {
-            if (!isAttracted) transform.position = Vector2.MoveTowards(transform.position, target, speed * Time.deltaTime);
+            if (!isAttracted)
+            {
+                transform.position = Vector2.MoveTowards(transform.position, target, speed * Time.deltaTime);
+              //  transform.position = new Vector2 (Mathf.Round(transform.position.x) , Mathf.Round(transform.position.y));
+            }
             else transform.position = attractedVector;
         }
     }

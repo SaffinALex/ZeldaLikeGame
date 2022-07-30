@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2901103593645027850}
   m_Layer: 0
   m_Name: EmptyWeapon
-  m_TagString: Untagged
+  m_TagString: Weapon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -47,3 +47,4 @@ MonoBehaviour:
   icon: {fileID: 8140927639353546349, guid: c98cc30e84591884683831e08778728e, type: 3}
   name: rien
   isEnable: 0
+  needToBeInstantiate: 0

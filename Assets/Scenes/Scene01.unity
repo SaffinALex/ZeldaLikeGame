@@ -137,6 +137,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4424601535819044821, guid: 01c69967f46353f4084a71e7ff6b60a7,
         type: 3}
+      propertyPath: music
+      value: 
+      objectReference: {fileID: 8300000, guid: 217840e012edfbe46837b299cd972d87, type: 3}
+    - target: {fileID: 4424601535819044821, guid: 01c69967f46353f4084a71e7ff6b60a7,
+        type: 3}
       propertyPath: sceneName
       value: DungeonTest
       objectReference: {fileID: 0}

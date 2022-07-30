@@ -52,52 +52,7 @@ public class OutsideCameraBehavior : MonoBehaviour
     private void FixedUpdate()
     {
 
-        if (GameVariables.Instance.cameraSwipe)
-        {
-            if (swipeDown)
-            {
-                transform.position += new Vector3(0, -cameraLerpSpeed, 0)*Time.deltaTime;
-                GameVariables.Instance.player.SlideToPosition(new Vector2(0, -cameraLerpSpeed/480 ));
-                if (transform.position.y - finalPositionSwipe.y >= -0.1 && transform.position.y - finalPositionSwipe.y <= 0.1)
-                {
-                    transform.position = new Vector3(finalPositionSwipe.x, finalPositionSwipe.y, transform.position.z);
-                }
-            }
-            else if (swipeLeft)
-            {
-                transform.position += new Vector3(-cameraLerpSpeed, 0, 0) * Time.deltaTime;
-                GameVariables.Instance.player.SlideToPosition(new Vector2(-cameraLerpSpeed / 480, 0));
-                if ( transform.position.x - finalPositionSwipe.x  >= -0.1 && transform.position.x - finalPositionSwipe.x <= 0.1)
-                {
-                    transform.position = new Vector3(finalPositionSwipe.x, finalPositionSwipe.y, transform.position.z);
-                }
-            }
-            else if (swipeRight)
-            {
-                transform.position += new Vector3(cameraLerpSpeed, 0, 0) * Time.deltaTime;
-                GameVariables.Instance.player.SlideToPosition(new Vector2(cameraLerpSpeed / 480, 0));
-                if (finalPositionSwipe.x - transform.position.x >= -0.1 && finalPositionSwipe.x - transform.position.x <= 0.1)
-                {
-                    transform.position = new Vector3(finalPositionSwipe.x, finalPositionSwipe.y, transform.position.z);
-                }
-            }
-            else if (swipeUp)
-            {
-                transform.position += new Vector3(0, cameraLerpSpeed, 0) * Time.deltaTime;
-                GameVariables.Instance.player.SlideToPosition(new Vector2(0, cameraLerpSpeed / 480));
-                if(finalPositionSwipe.y - transform.position.y >= -0.1 && finalPositionSwipe.y - transform.position.y <= 0.1)
-                {
-                    transform.position = new Vector3(finalPositionSwipe.x, finalPositionSwipe.y, transform.position.z);
-                }
-            }
-
-            if((Vector2)transform.position == finalPositionSwipe)
-            {
-                GameVariables.Instance.cameraSwipe = false;
-                GameStateManager.Instance.SetState(GameStateManager.GameState.Playing);
-                swipeDown = swipeLeft = swipeRight = swipeDown = false;
-            }
-        }
+        
     }
     // Update is called once per frame
     void Update()

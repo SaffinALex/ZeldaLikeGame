@@ -27,6 +27,7 @@ TagManager:
   - KillingFloot
   - Water
   - DeepWater
+  - EnnemyWall
   layers:
   - Default
   - TransparentFX
@@ -41,8 +42,8 @@ TagManager:
   - Enemy
   - Weapon
   - Camera
-  - 
-  - 
+  - InvisiblePlayer
+  - IgnoreWeapon
   - 
   - 
   - 

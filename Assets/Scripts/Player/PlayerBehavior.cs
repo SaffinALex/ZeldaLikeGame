@@ -63,8 +63,7 @@ public class PlayerBehavior : MonoBehaviour
     public float delayBetweenItemUse;
     private float timerDelayBetweenItemUse;
     // Start is called before the first frame update
-
-        #region position
+    #region position
     public bool LookDown()
     {
         return animator.GetFloat("MoveY") == -1;
@@ -100,7 +99,7 @@ public class PlayerBehavior : MonoBehaviour
     }
     public void SetSmoothMovement(Vector2 smoothVectorMovement)
     {
-        this.smoothVectorMovement = smoothVectorMovement;
+        this.smoothVectorMovement = smoothVectorMovement.normalized;
     }
     #endregion
 
@@ -198,6 +197,12 @@ public class PlayerBehavior : MonoBehaviour
         }
         if (timeRecoveryTimer <= 0 && isPushBack) isPushBack = false;
         timerDelayBetweenItemUse += Time.deltaTime;
+
+        Vector3 newPosition = transform.position;
+
+        newPosition.x = Mathf.Round(newPosition.x);
+        newPosition.y = Mathf.Round(newPosition.y);
+      //  transform.position = newPosition;
     }
     private void OnDestroy()
     {
@@ -253,7 +258,11 @@ public class PlayerBehavior : MonoBehaviour
 
         if (CanMove && !GameVariables.Instance.cameraSwipe && animator.GetBool("IsMoving") && playMovement && !isPushBack && !isAttracted)
         {
-            Vector3 newPosition = transform.position + ((new Vector3(moveX, moveY, 0) + (Vector3)smoothVectorMovement).normalized * characterSpeed * Time.deltaTime);
+            Vector3 newPosition = transform.position + ((new Vector3(moveX, moveY, 0)  + (Vector3)smoothVectorMovement ).normalized * characterSpeed )/* Time.deltaTime)*/;
+
+            newPosition.x = Mathf.Round(newPosition.x);
+            newPosition.y = Mathf.Round(newPosition.y);
+           // transform.position = newPosition;
             GetComponent<Rigidbody2D>().MovePosition(newPosition);
             playMovement = false;
         }
@@ -298,6 +307,10 @@ public class PlayerBehavior : MonoBehaviour
         }
     }
 
+    private void LateUpdate()
+    {
+        //transform.position =new Vector2(Mathf.Round(transform.position.x), Mathf.Round(transform.position.y));
+    }
     private void CheckIfCanMove()
     {
         bool t = !GameVariables.Instance.cameraSwipe &&!animator.GetBool("isGrabbing") && !animator.GetBool("isAttack") && !animator.GetBool("UseWeapon") && !animator.GetBool("isFalling") && !animator.GetBool("isInLava");

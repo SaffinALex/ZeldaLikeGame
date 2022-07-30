@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -26,6 +27,9 @@ public class ChestBehavior : MonoBehaviour
     public float timeBeforeDisplayText;
     public bool canBeOpen;
     public SpriteRenderer placeHolder;
+    public bool onlyOneTime;
+    private string originText;
+    private float originTimeBeforeDisplayText;
 
     private void OnTriggerStay2D(Collider2D collision)
     {
@@ -45,11 +49,25 @@ public class ChestBehavior : MonoBehaviour
     {
         isOpen = false;
         timeLeft = 0;
+        originText = initialText;
+        originTimeBeforeDisplayText = timeBeforeDisplayText;
     }
     public void Start()
     {
         text = GameVariables.Instance.dialogueBox.GetComponentInChildren(typeof(Text)) as Text;
+        GameVariables.Instance.CreateTriggerEvent("ResetChest", () => { if (!onlyOneTime) Reset(); });
         text.text = "";
+
+    }
+
+    public void Reset()
+    {
+        isOpen = false;
+        initialText = originText;
+        timeLeft = 0;
+        timeBeforeDisplayText = originTimeBeforeDisplayText;
+        canBeOpen = true;
+        GetComponent<Animator>().SetBool("isOpen", false);
     }
 
     public void Update()

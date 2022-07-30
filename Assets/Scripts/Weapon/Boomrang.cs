@@ -15,7 +15,7 @@ public class Boomrang : BaseWeapon
     private float timer = 0;
     public void OnTriggerEnter2D(Collider2D collision)
     {
-        if (!reversePath && !collision.CompareTag("ColliderObject") || collision.CompareTag("Ennemy"))
+        if (!reversePath && (collision.CompareTag("ColliderObject") || collision.CompareTag("Ennemy")))
         {
             if (collision.CompareTag("Ennemy"))
             {

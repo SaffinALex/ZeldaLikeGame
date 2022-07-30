@@ -5,14 +5,12 @@ using UnityEngine.Events;
 
 public class SpawnerEvent : MonoBehaviour
 {
-    public UnityEvent eventWhenFished;
-    public UnityEvent eventWhenStart;
+    public string[] eventsBeginName;
+    public string[] eventsEndName;
     public bool isActive;
     private bool eventReady;
     public List<GameObject> enemiesToSpawn;
     private List<GameObject> enemiesSpawn;
-    public AudioClip DoorClosed;
-    public AudioClip DoorOpen;
     public AudioClip EnnemiesSpawn;
     private float timer;
     private bool canBeActivate;
@@ -24,10 +22,12 @@ public class SpawnerEvent : MonoBehaviour
 
     public void BeginEvent()
     {
-        eventWhenStart?.Invoke();
+        foreach(string s in eventsBeginName)
+        {
+            GameVariables.TriggerEventByName(s);
+        }
         canBeActivate = false;
         eventReady = true;
-        GameVariables.Instance.gameAudioSource.PlayOneShot(DoorClosed);
 
     }
     private void Awake()
@@ -38,13 +38,14 @@ public class SpawnerEvent : MonoBehaviour
         eventReady = false;
         enemiesSpawn = new List<GameObject>();
     }
+    private void Start()
+    {
+        GameVariables.Instance.CreateTriggerEvent("ResetDungeon", () => Reset()) ;
+    }
     private void Update()
     {
-        if (eventReady && timer <= DoorClosed.length)
-        {
-            timer += Time.deltaTime;
-        }
-        else if(timer >= DoorClosed.length && !enemyAreSpawn)
+
+         if(!enemyAreSpawn && eventReady)
         {
             foreach (GameObject e in enemiesToSpawn)
             {
@@ -73,8 +74,10 @@ public class SpawnerEvent : MonoBehaviour
             {
                 isActive = false;
                 eventReady = false;
-                eventWhenFished?.Invoke();
-                GameVariables.Instance.gameAudioSource.PlayOneShot(DoorOpen);
+                foreach (string s in eventsEndName)
+                {
+                    GameVariables.TriggerEventByName(s);
+                }
             }
         }
     }
@@ -83,13 +86,16 @@ public class SpawnerEvent : MonoBehaviour
     {
         isActive = true;
         eventReady = false;
-        foreach (GameObject e in enemiesSpawn)
-        {
-            if (e == null)
-            {
-                enemiesSpawn.Remove(e);
-            }
-        }
+        for(int i = 0; i < enemiesSpawn.Count; i++)
+                {
+                    if (enemiesSpawn[i].activeInHierarchy)
+                    {
+                        enemiesSpawn.RemoveAt(i);
+                Destroy(enemiesSpawn[i]);
+                        i--;
+                    }
+                    i++;
+                }
         enemyAreSpawn = false;
         canBeActivate = true;
     }
