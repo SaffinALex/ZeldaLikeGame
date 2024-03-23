@@ -12,8 +12,16 @@ public abstract class BaseItem : ScriptableObject
     [SerializeField]
     protected double recoveryTime;
     protected BrainBehavior player;
-    
-    public abstract void Use(Transform userTransform, BrainBehavior brain, KeyCode associateKey);
+    [SerializeField]
+    private int maxAuthorizedInstance;
+    public int MaxAuthorizedInstance
+    {
+        get { return maxAuthorizedInstance; }
+        set { }
+    }
+
+
+    public abstract void Use(Transform userTransform, BrainBehavior brain, KeyCode associateKey, WeaponModule weaponModule);
     public double GetRecoveryTime()
     {
         return recoveryTime;

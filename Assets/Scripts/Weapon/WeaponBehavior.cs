@@ -8,6 +8,7 @@ public abstract class WeaponBehavior : MonoBehaviour
     protected BrainBehavior player;
     protected KeyCode associateKey;
     protected int damage;
+    protected WeaponModule associatedModule;
 
     public abstract void Activate();
 
@@ -17,11 +18,12 @@ public abstract class WeaponBehavior : MonoBehaviour
         Activate();
     }
 
-    public void initialize(KeyCode associateKey, BrainBehavior brain, int damage)
+    public void initialize(KeyCode associateKey, BrainBehavior brain, int damage, WeaponModule weaponModule)
     {
         this.associateKey = associateKey;
         player = brain;
         this.damage = damage;
+        associatedModule = weaponModule;
     }
 
     public void OnGameStateChanged(GameStateManager.GameState gameState)

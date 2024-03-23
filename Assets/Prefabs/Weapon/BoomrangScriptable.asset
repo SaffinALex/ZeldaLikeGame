@@ -15,5 +15,6 @@ MonoBehaviour:
   damage: 10
   icon: {fileID: 21300000, guid: 66f4360d9f6ca9d488ffc271dc2d1e32, type: 3}
   objectName: Boomrang
-  recoveryTime: 5
+  recoveryTime: 1
+  maxAuthorizedInstance: 1
   prefab: {fileID: 6635315048080948917, guid: 23e6d7c168dd699449877e9e6df0d317, type: 3}

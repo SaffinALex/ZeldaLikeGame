@@ -65,6 +65,7 @@ public class Boomrang : WeaponBehavior
                 GameVariables.Instance.player.GetMovementModule().CanMove = true;
                 player.GetComponent<Animator>().SetBool("UseWeapon", false);
                 GetComponent<Animator>().SetBool("isActive", false);
+                associatedModule.DecreasedCounter();
                 Destroy(this.gameObject);
             }
         }
@@ -80,6 +81,7 @@ public class Boomrang : WeaponBehavior
 
     public override void Activate()
     {
+        associatedModule.IncreaseCounter();
         Attack();
     }
 
