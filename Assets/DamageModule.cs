@@ -2,6 +2,7 @@
 using ModularLib;
 using System.Collections.Generic;
 using System.Collections;
+using System;
 
 public class DamageModule : ModuleBehavior
 {
@@ -11,6 +12,7 @@ public class DamageModule : ModuleBehavior
     public AudioClip hitSound;
     public float knockbackSpeedFactor = 1f;
     private int currentLifePoint;
+    private bool isInvincible;
 
     public float knockbackStrength = 1f;
     public float knockbackTime = 0.2f;
@@ -20,6 +22,7 @@ public class DamageModule : ModuleBehavior
     public BinaryData IsHitByFluid { get; set; }
 
     public BinaryData IsHitByEnemy { get; set; }
+    public bool IsInvincible { get => isInvincible; set => isInvincible = value; }
 
     public Asset brain;
 
@@ -35,6 +38,7 @@ public class DamageModule : ModuleBehavior
 
     public override void InitializeModule()
     {
+        IsInvincible = false;
         IsHitByEnemy = new BinaryData(brain);
         IsHitByFluid = new BinaryData(brain);
         IsHitByEnemy.Value = false;
@@ -52,7 +56,7 @@ public class DamageModule : ModuleBehavior
 
     public void FixedUpdateModule()
     {
-        if (!IsHitByFluid.Value)
+        if (!IsHitByFluid.Value && !isInvincible)
         {
             RespawnPos rp = listSavePos[indexListSavePos];
             rp.time = Time.realtimeSinceStartup;
@@ -77,7 +81,7 @@ public class DamageModule : ModuleBehavior
 
     public void GetDamage(int dmg, Transform enemy)
     {
-        if (recoveryTimer <= 0 && !IsHitByFluid.Value)
+        if (recoveryTimer <= 0 && !IsHitByFluid.Value && !IsInvincible)
         {
             IsHitByEnemy.Value = true;
             currentLifePoint -= dmg;
@@ -93,9 +97,9 @@ public class DamageModule : ModuleBehavior
         }
     }
 
-    public void sinkPlayer(int dmg, float time)
+    public void SinkPlayer(int dmg, float time)
     {
-        if (!IsHitByFluid.Value)
+        if (!IsHitByFluid.Value && !IsInvincible)
         {
             if (recoveryTimer <= 0)
             {
@@ -121,6 +125,8 @@ public class DamageModule : ModuleBehavior
         IsHitByFluid.Value = false;
     }
 
-
-
+    public void SwitchInvinciblePropertie()
+    {
+        IsInvincible = !IsInvincible;
+    }
 }

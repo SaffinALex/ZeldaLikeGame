@@ -32,7 +32,7 @@ public class CameraController : MonoBehaviour
             GameStateManager.Instance.SetState(GameStateManager.GameState.Playing);
             initialPosition = transform.position;
         }
-        if (!GameVariables.instance.player.isFlying)
+        if (!GameVariables.instance.player.IsJumping)
         {
             // Vérifie si le joueur est près du bord de l'écran en x
             if (Mathf.Abs(player.position.x - transform.position.x) > Camera.main.orthographicSize - screenEdgeBufferLeft)

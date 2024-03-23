@@ -6,10 +6,14 @@ using System;
 
 public class BrainBehavior : Asset
 {
-    BinaryCondition isPlayerMoving;
-    BinaryCondition isPushing;
-    BinaryCondition isHitByEnemyCondition;
-    BinaryCondition isHitByFluidCondition;
+    private BinaryCondition isPlayerMoving;
+    private BinaryCondition isPushingCondition;
+    private BinaryCondition isHitByEnemyCondition;
+    private BinaryCondition isHitByFluidCondition;
+    private BinaryCondition isJumpingCondition;
+
+    private BinaryData isJumping;
+
     VectorCondition onPlayerDirection;
 
     public MovementModule movementModule;
@@ -21,10 +25,15 @@ public class BrainBehavior : Asset
 
     internal GameObject CarryObject;
     internal bool isAttracted;
-    internal bool isFlying;
 
     public GameObject A { get; internal set; }
     public GameObject B { get; internal set; }
+    public BinaryCondition IsPlayerMoving { get => isPlayerMoving; set => isPlayerMoving = value; }
+    public BinaryCondition IsPushingCondition { get => isPushingCondition; set => isPushingCondition = value; }
+    public BinaryCondition IsHitByEnemyCondition { get => isHitByEnemyCondition; set => isHitByEnemyCondition = value; }
+    public BinaryCondition IsHitByFluidCondition { get => isHitByFluidCondition; set => isHitByFluidCondition = value; }
+    public BinaryCondition IsJumpingCondition { get => isJumpingCondition; set => isJumpingCondition = value; }
+    public bool IsJumping { get => isJumping.Value; set => isJumping.Value = value; }
 
     public void Awake()
     {
@@ -42,58 +51,68 @@ public class BrainBehavior : Asset
 
         GameStateManager.Instance.OnGameStateChanged += OnGameStateChanged;
 
-        isPlayerMoving = new BinaryCondition();
-        isPlayerMoving.CreateNewCondition();
+        isJumping = new BinaryData(this);
 
-        isPushing = new BinaryCondition();
-        isPushing.CreateNewCondition();
+        IsPlayerMoving = new BinaryCondition();
+        IsPlayerMoving.CreateNewCondition();
 
-        isHitByEnemyCondition = new BinaryCondition();
-        isHitByEnemyCondition.CreateNewCondition();
+        IsJumpingCondition = new BinaryCondition();
+        IsJumpingCondition.CreateNewCondition();
 
-        isHitByFluidCondition = new BinaryCondition();
-        isHitByFluidCondition.CreateNewCondition();
+        IsHitByEnemyCondition = new BinaryCondition();
+        IsHitByEnemyCondition.CreateNewCondition();
+
+        IsHitByFluidCondition = new BinaryCondition();
+        IsHitByFluidCondition.CreateNewCondition();
 
         onPlayerDirection = new VectorCondition();
         onPlayerDirection.CreateNewCondition();
 
+        IsJumpingCondition = new BinaryCondition();
+        IsJumpingCondition.CreateNewCondition();
 
 
-
-        movementModule.isMoving.RegisterNewCondition(isPlayerMoving);
+        movementModule.isMoving.RegisterNewCondition(IsPlayerMoving);
         movementModule.directionData.RegisterNewCondition(onPlayerDirection);
+        isJumping.RegisterNewCondition(isJumpingCondition);
 
-        damageModule.IsHitByEnemy.RegisterNewCondition(isHitByEnemyCondition);
-        damageModule.IsHitByFluid.RegisterNewCondition(isHitByFluidCondition);
-
-        colliderModule.isPushing.RegisterNewCondition(isPushing);
-
-
-        BindCallbackOnEvent(isPlayerMoving.OnEventChangedToTrue, animationModule.OnPlayerStartMoving);
-        BindCallbackOnEvent(isPlayerMoving.OnEventChangedToFalse, animationModule.OnPlayerStopMoving);
-
-        BindCallbackOnEvent(isHitByFluidCondition.OnEventChangedToTrue, animationModule.OnPlayerIsHitByFluid);
-        BindCallbackOnEvent(isHitByFluidCondition.OnEventChangedToFalse, animationModule.OnPlayerIsNotHitByFluid);
-
-        BindCallbackOnEvent(isHitByFluidCondition.OnEventChangedToTrue, movementModule.OnPlayerIsHitByEnemy);
-        BindCallbackOnEvent(isHitByFluidCondition.OnEventChangedToFalse,  movementModule.OnPlayerIsNotHitByEnemy);
+        damageModule.IsHitByEnemy.RegisterNewCondition(IsHitByEnemyCondition);
+        damageModule.IsHitByFluid.RegisterNewCondition(IsHitByFluidCondition);
 
 
-        BindCallbackOnEvent(isHitByEnemyCondition.OnEventChangedToTrue, movementModule.OnPlayerIsHitByEnemy);
-        BindCallbackOnEvent(isHitByEnemyCondition.OnEventChangedToFalse, movementModule.OnPlayerIsNotHitByEnemy);
 
-        BindCallbackOnEvent(isHitByFluidCondition.OnEventChangedToTrue, weaponLeft.WhenPlayerIsHit);
-        BindCallbackOnEvent(isHitByFluidCondition.OnEventChangedToTrue, weaponRight.WhenPlayerIsHit);
-        BindCallbackOnEvent(isHitByFluidCondition.OnEventChangedToFalse, weaponRight.WhenPlayerIsNotHit);
-        BindCallbackOnEvent(isHitByFluidCondition.OnEventChangedToFalse, weaponLeft.WhenPlayerIsNotHit);
+        BindCallbackOnEvent(IsPlayerMoving.OnEventChangedToTrue, animationModule.OnPlayerStartMoving);
+        BindCallbackOnEvent(IsPlayerMoving.OnEventChangedToFalse, animationModule.OnPlayerStopMoving);
 
+        BindCallbackOnEvent(IsHitByFluidCondition.OnEventChangedToTrue, animationModule.OnPlayerIsHitByFluid);
+        BindCallbackOnEvent(IsHitByFluidCondition.OnEventChangedToFalse, animationModule.OnPlayerIsNotHitByFluid);
 
-        BindCallbackOnEvent(isHitByEnemyCondition.OnEventChangedToTrue, weaponLeft.WhenPlayerIsHit);
-        BindCallbackOnEvent(isHitByEnemyCondition.OnEventChangedToTrue, weaponRight.WhenPlayerIsHit);
-        BindCallbackOnEvent(isHitByEnemyCondition.OnEventChangedToFalse, weaponRight.WhenPlayerIsNotHit);
-        BindCallbackOnEvent(isHitByEnemyCondition.OnEventChangedToFalse, weaponLeft.WhenPlayerIsNotHit);
+        BindCallbackOnEvent(IsHitByFluidCondition.OnEventChangedToTrue, movementModule.OnPlayerIsHitByEnemy);
+        BindCallbackOnEvent(IsHitByFluidCondition.OnEventChangedToFalse,  movementModule.OnPlayerIsNotHitByEnemy);
 
 
+        BindCallbackOnEvent(IsHitByEnemyCondition.OnEventChangedToTrue, movementModule.OnPlayerIsHitByEnemy);
+        BindCallbackOnEvent(IsHitByEnemyCondition.OnEventChangedToFalse, movementModule.OnPlayerIsNotHitByEnemy);
+
+        BindCallbackOnEvent(IsHitByFluidCondition.OnEventChangedToTrue, weaponLeft.WhenPlayerIsHit);
+        BindCallbackOnEvent(IsHitByFluidCondition.OnEventChangedToTrue, weaponRight.WhenPlayerIsHit);
+        BindCallbackOnEvent(IsHitByFluidCondition.OnEventChangedToFalse, weaponRight.WhenPlayerIsNotHit);
+        BindCallbackOnEvent(IsHitByFluidCondition.OnEventChangedToFalse, weaponLeft.WhenPlayerIsNotHit);
+
+        BindCallbackOnEvent(IsJumpingCondition.OnEventChangedToTrue, weaponRight.WhenPlayerIsHit);
+        BindCallbackOnEvent(IsJumpingCondition.OnEventChangedToFalse, weaponRight.WhenPlayerIsNotHit);
+
+        BindCallbackOnEvent(IsJumpingCondition.OnEventChangedToTrue, animationModule.SwitchJumpAnimation);
+        BindCallbackOnEvent(IsJumpingCondition.OnEventChangedToFalse, animationModule.SwitchJumpAnimation);
+
+        BindCallbackOnEvent(IsJumpingCondition.OnEventChangedToTrue, damageModule.SwitchInvinciblePropertie);
+        BindCallbackOnEvent(IsJumpingCondition.OnEventChangedToFalse, damageModule.SwitchInvinciblePropertie);
+
+
+        BindCallbackOnEvent(IsHitByEnemyCondition.OnEventChangedToTrue, weaponLeft.WhenPlayerIsHit);
+        BindCallbackOnEvent(IsHitByEnemyCondition.OnEventChangedToTrue, weaponRight.WhenPlayerIsHit);
+        BindCallbackOnEvent(IsHitByEnemyCondition.OnEventChangedToFalse, weaponRight.WhenPlayerIsNotHit);
+        BindCallbackOnEvent(IsHitByEnemyCondition.OnEventChangedToFalse, weaponLeft.WhenPlayerIsNotHit);
 
 
         BindCallbackOnEvent(onPlayerDirection.onVectorRight, animationModule.OnPlayerGoRight);
@@ -106,8 +125,8 @@ public class BrainBehavior : Asset
         BindCallbackOnEvent(onPlayerDirection.onVectorDown, colliderModule.OnPlayerGoDown);
         BindCallbackOnEvent(onPlayerDirection.onVectorUp, colliderModule.OnPlayerGoUp);
 
-        BindCallbackOnEvent(isPushing.OnEventChangedToTrue, animationModule.OnPushStart);
-        BindCallbackOnEvent(isPushing.OnEventChangedToFalse, animationModule.OnPushStop);
+    /*    BindCallbackOnEvent(IsPushing.OnEventChangedToTrue, animationModule.OnPushStart);
+        BindCallbackOnEvent(IsPushing.OnEventChangedToFalse, animationModule.OnPushStop);*/
 
     }
 

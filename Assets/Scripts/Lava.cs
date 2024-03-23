@@ -17,13 +17,21 @@ public class Lava : MonoBehaviour
         }
         if (collision.CompareTag("PlayerFeet") && collision.GetComponent<PartOfBodyBehavior>().CheckIfInWater() )
         {
-            GameVariables.Instance.player.damageModule.sinkPlayer(damage, sinkDuration);
+            GameVariables.Instance.player.damageModule.SinkPlayer(damage, sinkDuration);
         }
         if (collision.CompareTag("EnnemyFeet") && !collision.transform.parent.GetComponent<Animator>().GetBool("isInLava"))
         {
             collision.transform.parent.GetComponent<Animator>().SetBool("isInLava", true);
             collision.transform.parent.GetComponent<BasicEnemyBehavior>().Sink(sinkDuration);
             GameVariables.Instance.gameAudioSource.PlayOneShot(plouf);
+        }
+    }
+
+    public void OnTriggerStay2D(Collider2D collision)
+    {
+        if (collision.CompareTag("PlayerFeet") && collision.GetComponent<PartOfBodyBehavior>().CheckIfInWater() && !GameVariables.Instance.player.damageModule.IsHitByFluid.Value)
+        {
+            GameVariables.Instance.player.damageModule.SinkPlayer(damage, sinkDuration);
         }
     }
 

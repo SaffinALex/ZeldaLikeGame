@@ -87,8 +87,13 @@ public class AnimationModule : ModuleBehavior
         playerAnimator.SetBool(v1, v2);
     }
 
-    internal bool GetBoolAnimator(string v)
+    public bool GetBoolAnimator(string v)
     {
         return playerAnimator.GetBool(v);
+    }
+
+    public void SwitchJumpAnimation()
+    {
+        SetBoolAnimator("isJumping", !GetBoolAnimator("isJumping"));
     }
 }

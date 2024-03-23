@@ -13,33 +13,29 @@ public class Feather : WeaponBehavior
 
    public void Update()
     {
-        if (player.isFlying || jumpFinish)
+        if (player.IsJumping)
         {
             timer += Time.deltaTime;
             if (timer >= jumpDuration && !jumpFinish)
             {
-                player.isFlying = false;
-                player.SetBoolAnimator("isJumping", false);
                 jumpFinish = true;
                 GameVariables.Instance.gameAudioSource.PlayOneShot(playerHitGround);
             }
             else if (jumpFinish)
             {
+                player.IsJumping = false;
+                associatedModule.DecreasedCounter();
                 Destroy(gameObject);
             }
         }
     }
-    // Start is called before the first frame update
-    void Start()
-    {
-        jumpFinish = false;
-    }
 
     public override void Activate()
     {
+        associatedModule.IncreaseCounter();
+        jumpFinish = false;
         timer = 0;
-        player.isFlying = true;
-        player.SetBoolAnimator("isJumping", true);
+        player.IsJumping = true;
         GameVariables.Instance.gameAudioSource.PlayOneShot(playerJump);
     }
 }

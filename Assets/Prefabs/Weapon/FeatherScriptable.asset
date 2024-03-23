@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7f4dcb1f163e0e47aebbdf96c39f1b3, type: 3}
   m_Name: FeatherScriptable
   m_EditorClassIdentifier: 
-  damage: 2
+  damage: 0
   icon: {fileID: -5475296325334708228, guid: 00a7981988c931245b96eaa2be0f59ab, type: 3}
   objectName: Feather
-  recoveryTime: 0
+  recoveryTime: 2
+  maxAuthorizedInstance: 1
   prefab: {fileID: 9122227510049635492, guid: 8940175459e7ea14885e57e4538f4961, type: 3}
