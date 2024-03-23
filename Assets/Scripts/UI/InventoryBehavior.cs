@@ -5,12 +5,12 @@ using UnityEngine.UI;
 
 public class InventoryBehavior : MonoBehaviour
 {
-    public List<BaseWeapon> weapons;
+    public List<BaseItem> weapons;
     public GameObject selector;
     private int index_x, index_y;
     public float offset_x, offset_y;
     public int columns, lines;
-    private List<List<BaseWeapon>> weaponsInventory;
+    private List<List<BaseItem>> weaponsInventory;
     public List<Slot> slots;
     public MainSlotBehavior slotA, slotB;
     private bool canMoveSelector;
@@ -21,6 +21,7 @@ public class InventoryBehavior : MonoBehaviour
     public AudioClip closeMenu;
     public GameObject inventoryUI;
     private bool canOpenMenu;
+    [SerializeField]
     private int numberArrows, numberBombs, numberRupee, numberKey;
     [SerializeField]
     private List<Image> heartsContainer;
@@ -35,12 +36,12 @@ public class InventoryBehavior : MonoBehaviour
     {
         index_x = 0;
         index_y = 0;
-        weaponsInventory = new List<List<BaseWeapon>>();
+        weaponsInventory = new List<List<BaseItem>>();
         Debug.Assert(weapons.Count >= columns * lines, "Weapons to big or small");
         int index = 0;
         for (int i = 0; i < lines; i++)
         {
-            List<BaseWeapon> list1 = new List<BaseWeapon>();
+            List<BaseItem> list1 = new List<BaseItem>();
             for(int j = 0; j<columns; j++)
             {
                 list1.Add(weapons[index]);
@@ -115,7 +116,7 @@ public class InventoryBehavior : MonoBehaviour
       
             if (Input.GetKeyDown(KeyCode.A))
             {
-                BaseWeapon tmp = slotA.weapon;
+            BaseItem tmp = slotA.weapon;
                 slotA.weapon = (weaponsInventory[index_y][index_x]);
                 slotA.Refresh();
                 weaponsInventory[index_y][index_x] = tmp;
@@ -124,7 +125,7 @@ public class InventoryBehavior : MonoBehaviour
             }
             else if (Input.GetKeyDown(KeyCode.B))
             {
-                BaseWeapon tmp = slotB.weapon;
+            BaseItem tmp = slotB.weapon;
                 slotB.weapon = (weaponsInventory[index_y][index_x]);
                 slotB.Refresh();
                 weaponsInventory[index_y][index_x] = tmp;

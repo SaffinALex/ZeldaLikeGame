@@ -7,7 +7,6 @@ using UnityEngine.UI;
 
 public class NpcBehavior : MonoBehaviour
 {
-
     public List<Sprite> listSpriteDown;
     public List<Sprite> listSpriteUp;
     public List<Sprite> listSpriteLeft;
@@ -94,13 +93,10 @@ public class NpcBehavior : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space) && playerInRange && !dialogueBox.activeInHierarchy && dialogues.Count > 0)
         {
-            if (CheckIfPlayerCanTalk())
-            {
-                GameStateManager.Instance.SetState(GameStateManager.GameState.Talking);
-                dialogueBox.SetActive(true);
-                text = dialogues[dialogueIndex];
-                GameVariables.Instance.pauseGame = true;
-            }
+            GameStateManager.Instance.SetState(GameStateManager.GameState.Talking);
+            dialogueBox.SetActive(true);
+            text = dialogues[dialogueIndex];
+            GameVariables.Instance.pauseGame = true;
         }
 
         currentTime += Time.deltaTime;
@@ -153,11 +149,11 @@ public class NpcBehavior : MonoBehaviour
 
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnTriggerStay2D(Collider2D collision)
     {
         if (collision.CompareTag("PlayerBody"))
         {
-            playerInRange = true;
+             playerInRange = CheckIfPlayerCanTalk(collision.gameObject.transform);
         }
     }
     private void OnTriggerExit2D(Collider2D collision)
@@ -228,33 +224,9 @@ public class NpcBehavior : MonoBehaviour
         }
     }
     #region Dialogue
-    private bool CheckIfPlayerCanTalk()
+    private bool CheckIfPlayerCanTalk(Transform playerTransform)
     {
-        Vector2 dir = (GameVariables.Instance.player.transform.position - transform.position).normalized;
-        if (dir.x <= -0.8)
-        {
-            currentDirection = Position.Left;
-            return GameVariables.Instance.player.LookRight();
-        }
-        else if (dir.x >= 0.8)
-        {
-            currentDirection = Position.Right;
-            return GameVariables.Instance.player.LookLeft();
-        }
-        else if (dir.y >= 0.8)
-        {
-            currentDirection = Position.Up;
-            return GameVariables.Instance.player.LookDown();
-        }
-        else if (dir.y <= -0.8)
-        {
-            currentDirection = Position.Down;
-            return GameVariables.Instance.player.LookUp();
-        }
-        else
-        {
-            return false;
-        }
+        return GameVariables.instance.player.GetColliderModule().isFacingInteractive(gameObject, playerTransform.position);
     }
     private void DisplayNpcText()
     {

@@ -3,22 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Feather : BaseWeapon
+public class Feather : WeaponBehavior
 {
-    public float jumpDuration;
     private float timer;
-    private PlayerBehavior player;
-    public float couldown;
+    public float jumpDuration;
     public AudioClip playerJump;
     public AudioClip playerHitGround;
     private bool jumpFinish;
-    public override void Activate(PlayerBehavior player)
-    {
-        this.player = player;
-        player.isFlying = true;
-        player.SetBoolAnimator("isJumping", true);
-        GameVariables.Instance.gameAudioSource.PlayOneShot(playerJump);
-    }
 
    public void Update()
     {
@@ -34,7 +25,7 @@ public class Feather : BaseWeapon
             }
             else if (jumpFinish)
             {
-                if((couldown -= Time.deltaTime) <= 0) Destroy(gameObject);
+                Destroy(gameObject);
             }
         }
     }
@@ -44,4 +35,11 @@ public class Feather : BaseWeapon
         jumpFinish = false;
     }
 
+    public override void Activate()
+    {
+        timer = 0;
+        player.isFlying = true;
+        player.SetBoolAnimator("isJumping", true);
+        GameVariables.Instance.gameAudioSource.PlayOneShot(playerJump);
+    }
 }

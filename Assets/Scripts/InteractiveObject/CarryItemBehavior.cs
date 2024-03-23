@@ -5,102 +5,49 @@ using UnityEngine;
 
 public class CarryItemBehavior : MonoBehaviour
 {
+
+    private BrainBehavior player;
+    #region projectile
+
+    public int numberOfBounce;
+    private int cptBounce;
+    public bool isDestroyedOnGround;
+    #endregion
+
+    #region trajectory
     [Tooltip("Position we want to hit")]
     private Vector2 targetPos;
     public float distance;
     [Tooltip("Horizontal speed, in units/sec")]
     public float speed = 10;
-
     [Tooltip("How high the arc should be, in units")]
     public float arcHeight = 1;
-
     Vector2 startPos;
     private Vector2 playerDirection;
     Vector2 nextPos;
-    private PlayerBehavior player;
-    private bool isLaunch = false;
-    public float explosionDuration;
+    public float numeratorAfterBouncing;
+
+    #endregion
+
+    #region Trajectory
+
+    public enum CarryObjectState
+    {
+        inGround,
+        carryByPlayer,
+        launched,
+        stable,
+    }
+
+    private CarryObjectState carryObjectState;
+
     public AudioClip hitGroundSound;
-    public AudioClip explosion;
-    private bool isCarrying = false;
-    private bool isStable = false;
-    private Vector2 playerPosition;
-    public List<string> collisionTag;
-    public int damage;
-    private bool canCarry;
-    private bool isUnGrap = false;
-    public List<BoxCollider2D> boxColliders;
-    public float timeToGrap;
-    private Vector2 playerOrientation;
-    private bool isGrabbing;
     public ShadowBehavior shadowPos;
-    private Vector2 playerPosWhenLaunch;
-    public float grabSpeed;
-    public string weaponTagName;
+    private Vector3 initialLaunchPos;
     public AudioClip throwObject;
-    public AudioClip carryItemBegin;
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-
-        if (isLaunch && !GetBoolAnimator("isExploded"))
-        {
-            if (collision.CompareTag("Ennemy") && !GetBoolAnimator("isExploded"))
-            {
-                SetBoolAnimator("isExploded", true);
-                collision.GetComponent<EnemiesBehavior>().GetDamage(damage);
-                HitGround();
-            }
-
-        }
+    public AudioClip carryAudioSong;
 
 
-    }
-    private void OnTriggerStay2D(Collider2D collision)
-    {
-        if (isLaunch && !GetBoolAnimator("isExploded"))
-        {
-            if (collision.CompareTag("Ennemy") && !GetBoolAnimator("isExploded"))
-            {
-                SetBoolAnimator("isExploded", true);
-                collision.GetComponent<EnemiesBehavior>().GetDamage(damage);
-                HitGround();
-            }
-        }
-        if (!isCarrying && collision.CompareTag("Player"))
-        {
-            CheckIfCanCarry(collision.GetComponent<PlayerBehavior>());
-        }
-    }
-
-    private void CheckIfCanCarry(PlayerBehavior o)
-    {
-        Vector2 dir = ((Vector2)transform.position - (Vector2)o.transform.position).normalized;
-        if (dir.y >= 0.8f && o.LookUp())
-        {
-            canCarry = true;
-            playerOrientation = new Vector2(0, 1);
-        }
-        else if (dir.y <= -0.8f && o.LookDown())
-        {
-            canCarry = true;
-            playerOrientation = new Vector2(0, -1);
-        }
-        else if (dir.x <= -0.8f && o.LookLeft())
-        {
-            canCarry = true;
-            playerOrientation = new Vector2(-1, 0);
-        }
-        else if (dir.x >= 0.8f && o.LookRight())
-        {
-            canCarry = true;
-            playerOrientation = new Vector2(1, 0);
-        }
-        else
-        {
-            canCarry = false;
-        }
-        if (player == null) player = o;
-    }
     private void CalculateTrajectoryWhenLaunch()
     {
         // Compute the next position, with arc added in
@@ -110,11 +57,12 @@ public class CarryItemBehavior : MonoBehaviour
         float x1 = targetPos.x;
         float dist = x1 - x0;
         float nextX = Mathf.MoveTowards(transform.position.x, x1, speed * Time.deltaTime);
-        if (isStable)
+        if (carryObjectState == CarryObjectState.stable)
         {
             nextX = targetPos.x;
             baseY = Mathf.MoveTowards(transform.position.y, targetPos.y, speed * Time.deltaTime);
             nextPos = new Vector2(nextX, baseY);
+            cptBounce = numberOfBounce;
         }
         else if (dist == 0)
         {
@@ -130,150 +78,95 @@ public class CarryItemBehavior : MonoBehaviour
 
 
         // Do something when we reach the target
-        if (nextPos == targetPos && !GetBoolAnimator("isExploded")) HitGround();
-        else
-        {
-            SetPosition();
-        }
-    }
-    private void SetPosition()
-    {
-        transform.position = nextPos;
-        if (playerDirection.x != 0 && playerDirection.y == 0)
-        {
-            shadowPos.transform.position = new Vector2(nextPos.x, playerPosWhenLaunch.y);
-        }
-        else if (playerDirection.x != 0 && playerDirection.y != 0)
-        {
-            shadowPos.transform.position = new Vector2(nextPos.x, nextPos.y - 3);
-            //shadowPos.transform.position = Vector2.MoveTowards(shadowPos.transform.position, targetPos, 0.2f * Time.deltaTime);
-            shadowPos.transform.position = new Vector2(nextPos.x, nextPos.y);
-        }
-        else if (playerDirection.x == 0)
-        {
-            shadowPos.transform.position = new Vector2(nextPos.x, nextPos.y);
-        }
-        if (shadowPos.IsTrigger())
-        {
-            HitGround();
-        }
-    }
-    private void Awake()
-    {
-        shadowPos.gameObject.SetActive(false);
-    }
-    void FixedUpdate()
-    {
-        if (isGrabbing)
-        {
-            transform.position = Vector2.MoveTowards((Vector2)transform.position, nextPos, grabSpeed * Time.deltaTime);
-        }
-        //CheckIfExplode();
-        if (isLaunch && !GetBoolAnimator("isExploded"))
-        {
-            CalculateTrajectoryWhenLaunch();
-
-        }
-        else if (!isLaunch && player!=null)
-        {
-            if ( ((Input.GetKey(KeyCode.A) && player.GetWeaponATag() == weaponTagName) || (Input.GetKey(KeyCode.B) && player.GetWeaponBTag() == weaponTagName))  && !isCarrying && canCarry && !isGrabbing && !player.GetBoolAnimator("isGrabbing"))
-            {
-                Activate();
-                GameVariables.Instance.gameAudioSource.PlayOneShot(carryItemBegin);
-            }
-            else if ((((Input.GetKey(KeyCode.A) && player.GetWeaponATag() == weaponTagName) || (Input.GetKey(KeyCode.B) && player.GetWeaponBTag() == weaponTagName)) || isUnGrap ||
-                (player.GetWeaponBTag() != weaponTagName && player.GetWeaponATag() != weaponTagName) ) && isCarrying)
-            {
-                player.CarryObject = null;
-                playerPosWhenLaunch = player.transform.position;
-                shadowPos.gameObject.SetActive(true);
-                isLaunch = true;
-                startPos = transform.position;
-                playerDirection = player.GetVectorMove();
-                targetPos = (Vector2)this.player.transform.position + (distance * playerDirection);
-                gameObject.transform.parent = GameObject.FindGameObjectWithTag("Grid").transform;
-                player.SetBoolAnimator("isCarrying", false);
-                isCarrying = false;
-                if (!player.GetBoolAnimator("IsMoving") || isUnGrap)
-                {
-                    isStable = true;
-                    targetPos = player.transform.position;
-                }
-                else
-                {
-                    GameVariables.Instance.gameAudioSource.PlayOneShot(throwObject);
-                }
-            }
-            if (isCarrying)
-            {
-                nextPos = new Vector2(player.transform.position.x, player.transform.position.y + 16);
-                player.SetBoolAnimator("isCarrying", true);
-                transform.position = nextPos;
-                if (player.CarryObject != gameObject) player.CarryObject = gameObject;
-            }
-
-        }
+        if (nextPos == targetPos) Bouncing();
     }
 
-    public void HitGround()
+    internal CarryObjectState getState()
     {
-        GameVariables.Instance.gameAudioSource.PlayOneShot(hitGroundSound);
-        shadowPos.gameObject.SetActive(false);
-        SetBoolAnimator("isExploded", true);
-        StartCoroutine("Explode");
-
+        return carryObjectState;
     }
-    // Update is called once per frame
+    #endregion
 
-    public void Activate()
-    {
-        canCarry = false;
-        playerPosition = player.transform.position;
-        isGrabbing = true;
-        StartCoroutine("PlayGrabAnimation");
-        nextPos = new Vector2(player.transform.position.x, player.transform.position.y + 16);
-        //transform.position = nextPos;
-        foreach (BoxCollider2D b in boxColliders) b.enabled = false;
-        shadowPos.transform.position = transform.position;
-    }
 
-    private IEnumerator PlayGrabAnimation()
-    {
-        player.SetBoolAnimator("isGrabbing", true);
-        player.ChangePlayerOrientation(playerOrientation);
-        if (player.CarryObject != null)
-        {
-            if (player.CarryObject.GetComponent<CarryItemBehavior>() != null) player.CarryObject.GetComponent<CarryItemBehavior>().UnGrap();
-            else if (player.CarryObject.GetComponent<Bomb>() != null) player.CarryObject.GetComponent<Bomb>().UnGrap();
-            player.CarryObject = gameObject;
-        }
-        yield return new WaitForSeconds(timeToGrap);
-        player.CarryObject = gameObject;
-        player.SetBoolAnimator("isCarrying", true);
-        player.SetBoolAnimator("isGrabbing", false);
-        isGrabbing = false;
-        isCarrying = true;
-    }
     public void UnGrap()
     {
-        isUnGrap = true;
+        carryObjectState = CarryObjectState.launched;
     }
 
-    private IEnumerator Explode()
+    public void Bouncing()
     {
-        GameVariables.Instance.gameAudioSource.PlayOneShot(explosion);
-        yield return new WaitForSeconds(explosionDuration);
-        Destroy(gameObject);
+        cptBounce++;
+        speed /= numeratorAfterBouncing;
+        arcHeight /= numeratorAfterBouncing;
+        distance /= numeratorAfterBouncing;
+        GameVariables.Instance.gameAudioSource.PlayOneShot(hitGroundSound);
+        if (carryObjectState != CarryObjectState.stable)
+            targetPos += (distance * playerDirection);
+        startPos = transform.position;
+
+
     }
 
-    private void SetBoolAnimator(string name, bool value)
+    void FixedUpdate()
     {
-        GetComponent<Animator>().SetBool(name, value);
+        switch (carryObjectState)
+        {
+            case CarryObjectState.stable:
+            case CarryObjectState.launched:
+                if (cptBounce <= numberOfBounce)
+                {
+                    CalculateTrajectoryWhenLaunch();
+                    transform.position = nextPos;
+                    shadowPos.transform.position = new Vector3(nextPos.x, initialLaunchPos.y, 0);
+                }
+                break;
+            case CarryObjectState.carryByPlayer:
+                nextPos = new Vector2(player.transform.position.x, player.transform.position.y + 16);
+                transform.position = nextPos;
+                break;
+        }
+
     }
-    private bool GetBoolAnimator(string name)
+
+    public void ThrowItem()
     {
-        return GetComponent<Animator>().GetBool(name);
+        carryObjectState = CarryObjectState.launched;
+        startPos = transform.position;
+        playerDirection = GameVariables.Instance.player.GetMovementModule().getCurrentDirection();
+        targetPos = (Vector2)this.player.transform.position + (distance * playerDirection);
+        if (!player.GetBoolAnimator("IsMoving"))
+        {
+            targetPos = new Vector2(player.transform.position.x, player.transform.position.y);
+            carryObjectState = CarryObjectState.stable;
+        }
+        else
+        {
+            GameVariables.Instance.gameAudioSource.PlayOneShot(throwObject);
+        }
+        player.SetBoolAnimator("isCarrying", false);
     }
+
+    public void Initialize(BrainBehavior player)
+    {
+        this.player = player;
+        cptBounce = 0;
+        player.SetBoolAnimator("isCarrying", true);
+        GameVariables.Instance.gameAudioSource.PlayOneShot(carryAudioSong);
+        nextPos = new Vector2(player.transform.position.x, player.transform.position.y + 16);
+        transform.position = nextPos;
+        initialLaunchPos = player.transform.position;
+        shadowPos.transform.SetParent(null);
+        shadowPos.transform.position = new Vector3(transform.position.x, transform.position.y - 8, 0);
+        transform.SetParent(null);
+        carryObjectState = CarryObjectState.carryByPlayer;
+    }
+
+    public void OnDestroy()
+    {
+        Destroy(shadowPos.gameObject);
+    }
+
+
 
 #if UNITY_EDITOR
     public void OnDrawGizmos()

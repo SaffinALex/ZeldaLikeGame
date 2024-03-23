@@ -8,7 +8,7 @@ using static GameVariables.TriggerEvent;
 public class GameVariables : MonoBehaviour
 {
     public bool cameraSwipe { get; set; }
-    public PlayerBehavior player { get; set; }
+    public BrainBehavior player { get; set; }
 
     public static List<TriggerEvent> triggerEventList = new List<TriggerEvent>();
     public AudioSource gameAudioSource { get; set; }
@@ -28,6 +28,8 @@ public class GameVariables : MonoBehaviour
         }
     }
 
+    public bool StopPlayer { get; set; }
+
     public bool switchIsRed;
 
     private void Awake()
@@ -45,19 +47,27 @@ public class GameVariables : MonoBehaviour
         loadManager.LoadLevel();
         userInterfaceManager.LoadInventory();
     }
-    private void Start()
-    {
-        
-    }
+
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.I))
         {
-            if (GameStateManager.Instance.CurrentGameState == GameStateManager.GameState.Playing) { GameStateManager.Instance.SetState(GameStateManager.GameState.Pause); pauseGame = true; }
-            else if (GameStateManager.Instance.CurrentGameState == GameStateManager.GameState.Pause){
+
+            if (GameStateManager.Instance.CurrentGameState == GameStateManager.GameState.Playing)
+            {
+                GameStateManager.Instance.SetState(GameStateManager.GameState.Pause);
+                pauseGame = true;
+                if (player.CarryObject != null)
+                {
+                    player.CarryObject.GetComponent<ICarryObject>().UnGrap();
+                }
+            }
+            else if (GameStateManager.Instance.CurrentGameState == GameStateManager.GameState.Pause)
+            {
                 GameStateManager.Instance.SetState(GameStateManager.GameState.Playing);
                 pauseGame = false;
             }
+
         }
     }
 

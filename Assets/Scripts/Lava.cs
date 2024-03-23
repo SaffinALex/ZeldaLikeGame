@@ -8,19 +8,30 @@ public class Lava : MonoBehaviour
     public float sinkDuration;
     public AudioClip sinkAudio;
     public AudioClip plouf;
-    private void OnTriggerStay2D(Collider2D collision)
+
+    public void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.CompareTag("PlayerFeet") && !GameVariables.Instance.player.GetBoolAnimator("isInLava") && !GameVariables.Instance.player.GetBoolAnimator("isJumping"))
+        if (collision.CompareTag("PlayerFeet"))
         {
-            GameVariables.Instance.player.SetBoolAnimator("isInLava", true);
-            GameVariables.Instance.player.sinkPlayer(damage, sinkDuration);
-            GameVariables.Instance.gameAudioSource.PlayOneShot(sinkAudio);
+            collision.GetComponent<PartOfBodyBehavior>().IncreaseWaterCount();
+        }
+        if (collision.CompareTag("PlayerFeet") && collision.GetComponent<PartOfBodyBehavior>().CheckIfInWater() )
+        {
+            GameVariables.Instance.player.damageModule.sinkPlayer(damage, sinkDuration);
         }
         if (collision.CompareTag("EnnemyFeet") && !collision.transform.parent.GetComponent<Animator>().GetBool("isInLava"))
         {
             collision.transform.parent.GetComponent<Animator>().SetBool("isInLava", true);
             collision.transform.parent.GetComponent<BasicEnemyBehavior>().Sink(sinkDuration);
             GameVariables.Instance.gameAudioSource.PlayOneShot(plouf);
+        }
+    }
+
+    public void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.CompareTag("PlayerFeet"))
+        {
+            collision.GetComponent<PartOfBodyBehavior>().DecreaseWaterCount();
         }
     }
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class BorderBehavior : MonoBehaviour
 {
-    [SerializeField]
+/*    [SerializeField]
     private bool isBorderLeft, isBorderRight, isBorderUp, isBorderDown;
 
     [SerializeField]
@@ -13,7 +13,7 @@ public class BorderBehavior : MonoBehaviour
 
     public void OnCollisionStay2D(Collision2D collision)
     {
-        if(collision.gameObject.CompareTag("Player") && !GameVariables.Instance.cameraSwipe)
+        if (collision.gameObject.CompareTag("Player") && !GameVariables.Instance.cameraSwipe)
         {
             Debug.Assert(collision.gameObject.GetComponent<PlayerBehavior>() != null, "gameObject is not PlayerBehavior");
             GameStateManager.Instance.SetState(GameStateManager.GameState.SwipeCamera);
@@ -27,5 +27,5 @@ public class BorderBehavior : MonoBehaviour
                 mainCamera.swipeToUp();
 
         }
-    }
+    }*/
 }

@@ -8,6 +8,7 @@ public abstract class EnemiesBehavior : MonoBehaviour
 {
     #region Variables
     #region StatsVar
+    private bool isActive;
     public int damage;
     public int initialLife;
     public int currentLife { get; set; }
@@ -84,6 +85,7 @@ public abstract class EnemiesBehavior : MonoBehaviour
     // Start is called before the first frame update
     public void Awake()
     {
+        isActive = true;
         currentSprite = GetComponent<SpriteRenderer>();
         currentTime = 0;
         target = Vector2.zero;
@@ -119,7 +121,7 @@ public abstract class EnemiesBehavior : MonoBehaviour
 
         if (Vector3.Distance(player.position, transform.position) <= attackRange && !GetComponent<Animator>().GetBool("isInLava"))
         {
-            player.gameObject.GetComponent<PlayerBehavior>().GetDamage(damage, transform);
+            player.gameObject.GetComponent<DamageModule>().GetDamage(damage, transform);
         }
     }
 
@@ -179,8 +181,11 @@ public abstract class EnemiesBehavior : MonoBehaviour
                         break;
                 }
             }
-            if (!playerInRange) MoveRandomly();
-            else MoveToPlayer();
+            if (isActive)
+            {
+                if (!playerInRange) MoveRandomly();
+                else MoveToPlayer();
+            }
         }
     }
 
@@ -229,8 +234,8 @@ public abstract class EnemiesBehavior : MonoBehaviour
 
     public void OnGameStateChanged(GameStateManager.GameState gameState)
     {
-        if (gameState == GameStateManager.GameState.Pause || gameState == GameStateManager.GameState.Talking || gameState == GameStateManager.GameState.SwipeCamera) enabled = false;
-        else if (gameState == GameStateManager.GameState.Playing) enabled = true;
+        if (gameState == GameStateManager.GameState.Pause || gameState == GameStateManager.GameState.Talking || gameState == GameStateManager.GameState.SwipeCamera) { isActive = false; }
+        else if (gameState == GameStateManager.GameState.Playing) { isActive = true; }
     }
     private void OnDestroy()
     {

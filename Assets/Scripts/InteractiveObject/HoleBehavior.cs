@@ -17,7 +17,7 @@ public class HoleBehavior : MonoBehaviour
     public float coefMalusAttracted2;
     public float holeDistanceBeforeDead;
 
-    private void OnTriggerEnter2D(Collider2D collision)
+/*    private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("PlayerFeet") && !GameVariables.Instance.player.isAttracted)
         {
@@ -112,6 +112,6 @@ public class HoleBehavior : MonoBehaviour
         yield return new WaitForSeconds(fallDuration);
         ennemy.gameObject.SetActive(false);
         ennemy.GetComponent<Animator>().SetBool("isFalling", false);
-    }
+    }*/
 
 }

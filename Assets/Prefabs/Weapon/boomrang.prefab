@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 6635315048080948913}
   - component: {fileID: 6635315048080948912}
   - component: {fileID: 6635315048080948914}
+  - component: {fileID: -5831082091977783540}
   m_Layer: 11
   m_Name: boomrang
   m_TagString: Weapon
@@ -29,7 +30,7 @@ Transform:
   m_GameObject: {fileID: 6635315048080948917}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 16, y: 16, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -46,14 +47,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5903bfc3bf7d48548abcb60fcab8bc83, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 2
-  icon: {fileID: 21300000, guid: 66f4360d9f6ca9d488ffc271dc2d1e32, type: 3}
-  name: Boomrang
-  isEnable: 1
-  needToBeInstantiate: 0
+  effectTime: 3
   range: 80
   speed: 120
-  effectTime: 3
   sound: {fileID: 8300000, guid: c81460a6c480d6842bdfe8cfeb12f746, type: 3}
   soundLenghtOffset: 0.03
 --- !u!212 &6635315048080948913
@@ -152,3 +148,24 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.888705, y: 0.43981516}
   m_EdgeRadius: 0
+--- !u!50 &-5831082091977783540
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6635315048080948917}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0

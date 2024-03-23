@@ -6,10 +6,14 @@ public class ResetObject : MonoBehaviour
 {
     private Vector3 initialPosition;
     public bool mustBeReset;
-    private bool reset;
     void OnBecameInvisible()
     {
-        if (mustBeReset) reset = true;
+        if (mustBeReset)
+        {
+            this.transform.position = initialPosition;
+            GameVariables.TriggerEventByName("ResetObject" + gameObject.GetInstanceID().ToString());
+            gameObject.GetComponent<SpriteRenderer>().sprite = null;
+        }
     }
 
     // Update is called once per frame
@@ -18,14 +22,4 @@ public class ResetObject : MonoBehaviour
         initialPosition = this.transform.position;
     }
 
-    private void FixedUpdate()
-    {
-        if (reset)
-        {
-            this.transform.position = initialPosition;
-            GameVariables.TriggerEventByName("ResetObject"+gameObject.GetInstanceID().ToString());
-            GameVariables.DeleteTriggerEventByName("ResetObject" + this.GetInstanceID().ToString());
-            reset = false;
-        }
-    }
 }

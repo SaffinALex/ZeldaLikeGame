@@ -7,34 +7,31 @@ using UnityEngine.SceneManagement;
 public class LoadManager: MonoBehaviour
 {
     public GameObject player;
-    public Vector2 playerPositionOnLoad;
-    public FollowCameraBehavior followCamera;
-    private FollowCameraBehavior instantianteFollowCamera;
-    public AudioClip music;
-    public string sceneName;
+    public CameraController followCamera;
+    private CameraController instantianteFollowCamera;
+    public HouseTPData mapData;
     private string actualSceneName;
     public void LoadLevel()
     {
-        Debug.Assert(player.GetComponent<PlayerBehavior>() != null, "Player no have script playerBehavior");
-        GameVariables.Instance.player = Instantiate(player).GetComponent<PlayerBehavior>();
-        GameVariables.Instance.player.transform.position = playerPositionOnLoad;
+        GameVariables.Instance.player = Instantiate(player).GetComponent<BrainBehavior>();
         instantianteFollowCamera = Instantiate(followCamera);
-        instantianteFollowCamera.target = GameVariables.Instance.player.transform;
-        SceneManager.LoadScene(sceneName, LoadSceneMode.Additive);
-        actualSceneName = sceneName;
-        GameVariables.Instance.musicPlayer.PlayOneShot(music);
-        GameStateManager.Instance.SetState(GameStateManager.GameState.Playing);
+        instantianteFollowCamera.player = GameVariables.Instance.player.transform;
+        GameVariables.Instance.LoadLevel(mapData);
     }
 
     public void LoadLevel(HouseTPData data)
     {
         GameVariables.Instance.player.transform.position = data.playerSpawnPosition;
-        instantianteFollowCamera.maxPosition = data.maxPosition;
-        instantianteFollowCamera.minPosition = data.minPosition;
-        SceneManager.UnloadSceneAsync(actualSceneName);
+/*        instantianteFollowCamera.maxPosition = data.maxPosition;
+        instantianteFollowCamera.minPosition = data.minPosition;*/
+        if (actualSceneName != null)
+        {
+            SceneManager.UnloadSceneAsync(actualSceneName);
+        }
+
         SceneManager.LoadScene(data.sceneName, LoadSceneMode.Additive);
         actualSceneName = data.sceneName;
         GameStateManager.Instance.SetState(GameStateManager.GameState.Playing);
-        instantianteFollowCamera.SetBoxColliderActive(data.boxColliderIsActive);
+/*        instantianteFollowCamera.SetBoxColliderActive(data.boxColliderIsActive);*/
     }
 }

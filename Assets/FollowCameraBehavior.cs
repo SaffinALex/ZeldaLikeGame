@@ -48,7 +48,7 @@ public class FollowCameraBehavior : MonoBehaviour
         GameVariables.Instance.CreateTriggerEvent("SwipeUp", () => { swipeToUp(); maxPosition.y += moveOffset; minPosition.y += moveOffset; });
         GameVariables.Instance.CreateTriggerEvent("SwipeDown", () => { swipeToDown(); maxPosition.y -= moveOffset; minPosition.y -= moveOffset; });
         GameStateManager.Instance.OnGameStateChanged += OnGameStateChanged;
-        player = GameVariables.Instance.player;
+/*        player = GameVariables.Instance.player;*/
     }
 
     // Update is called once per frame

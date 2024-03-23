@@ -5,10 +5,10 @@ using UnityEngine.Events;
 
 public class DetectTrigger : MonoBehaviour
 {
-    public HoleBehavior hole;
+/*    public HoleBehavior hole;
     public void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("PlayerFeet") && !GameVariables.Instance.player.GetBoolAnimator("isFalling"))
+        if (collision.CompareTag("PlayerFeet"))
         {
             hole.WhenPlayerFall();
         }
@@ -19,9 +19,9 @@ public class DetectTrigger : MonoBehaviour
     }
     public void OnTriggerStay2D(Collider2D collision)
     {
-        if (collision.CompareTag("PlayerFeet") && !GameVariables.Instance.player.GetBoolAnimator("isFalling"))
+        if (collision.CompareTag("PlayerFeet") )
         {
             hole.WhenPlayerFall();
         }
-    }
+    }*/
 }

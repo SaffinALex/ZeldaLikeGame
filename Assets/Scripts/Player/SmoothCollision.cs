@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class SmoothCollision : MonoBehaviour
 {
-    [SerializeField]
+/*    [SerializeField]
     public InteractiveCollider colliderUpLeft, colliderUpRight, colliderDownLeft, colliderDownRight;
 
     [SerializeField]
@@ -15,15 +15,49 @@ public class SmoothCollision : MonoBehaviour
     #region lifetime
     private void Update()
     {
-        if((colliderDownLeft.IsCollide && colliderDownRight.IsCollide) || (colliderDownRight.IsCollide && colliderUpRight.IsCollide) || (colliderUpRight.IsCollide && colliderUpLeft.IsCollide) 
-            || (colliderDownLeft.IsCollide && colliderUpLeft))
+        GameVariables.Instance.player.SetBoolAnimator("IsPushingDown", false);
+        GameVariables.Instance.player.SetBoolAnimator("IsPushingRight", false);
+        GameVariables.Instance.player.SetBoolAnimator("IsPushingUp", false);
+        GameVariables.Instance.player.SetBoolAnimator("IsPushingLeft", false);
+        GameVariables.Instance.player.SetBoolAnimator("IsPushing", false);
+
+        if (GameVariables.Instance.player.GetBoolAnimator("IsMoving"))
         {
-            GameVariables.Instance.player.SetBoolAnimator("IsPushing", true);
+            if ((colliderDownLeft.IsCollide && colliderDownRight.IsCollide))
+            {
+                GameVariables.Instance.player.SetBoolAnimator("IsPushingLeft", false);
+                GameVariables.Instance.player.SetBoolAnimator("IsPushingRight", false);
+                GameVariables.Instance.player.SetBoolAnimator("IsPushingUp", false);
+                GameVariables.Instance.player.SetBoolAnimator("IsPushingDown", true);
+                GameVariables.Instance.player.SetBoolAnimator("IsPushing", true);
+            }
+            if (colliderDownRight.IsCollide && colliderUpRight.IsCollide)
+            {
+                GameVariables.Instance.player.SetBoolAnimator("IsPushingDown", false);
+                GameVariables.Instance.player.SetBoolAnimator("IsPushingLeft", false);
+                GameVariables.Instance.player.SetBoolAnimator("IsPushingUp", false);
+                GameVariables.Instance.player.SetBoolAnimator("IsPushingRight", true);
+                GameVariables.Instance.player.SetBoolAnimator("IsPushing", true);
+            }
+            if (colliderUpRight.IsCollide && colliderUpLeft.IsCollide)
+            {
+                GameVariables.Instance.player.SetBoolAnimator("IsPushingDown", false);
+                GameVariables.Instance.player.SetBoolAnimator("IsPushingRight", false);
+                GameVariables.Instance.player.SetBoolAnimator("IsPushingLeft", false);
+                GameVariables.Instance.player.SetBoolAnimator("IsPushingUp", true);
+                GameVariables.Instance.player.SetBoolAnimator("IsPushing", true);
+            }
+            if (colliderDownLeft.IsCollide && colliderUpLeft.IsCollide)
+            {
+                GameVariables.Instance.player.SetBoolAnimator("IsPushingDown", false);
+                GameVariables.Instance.player.SetBoolAnimator("IsPushingRight", false);
+                GameVariables.Instance.player.SetBoolAnimator("IsPushingUp", false);
+                GameVariables.Instance.player.SetBoolAnimator("IsPushingLeft", true);
+                GameVariables.Instance.player.SetBoolAnimator("IsPushing", true);
+            }
         }
-        else
-        {
-            GameVariables.Instance.player.SetBoolAnimator("IsPushing", false);
-        }
+
+        
     }
     public void FixedUpdate()
     {
@@ -75,6 +109,6 @@ public class SmoothCollision : MonoBehaviour
             GameVariables.Instance.player.SetSmoothMovement(new Vector2(0, 0));
         }
     }
-
-    #endregion
+*//*
+    #endregion*/
 }

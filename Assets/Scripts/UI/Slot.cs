@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class Slot : MonoBehaviour
 {
-    public BaseWeapon weapon;
+    public BaseItem weapon;
     public Text text;
     public Image icons;
     public bool hasNumber;
@@ -29,7 +29,7 @@ public class Slot : MonoBehaviour
     public virtual void Refresh()
     {
 
-        if (weapon.isEnable)
+   /*     if (weapon.enabled)
         {
             text.text = weapon.name;
             icons.sprite = weapon.icon;
@@ -38,12 +38,12 @@ public class Slot : MonoBehaviour
         {
             text.text = "";
             icons.sprite = null;
-        }
+        }*/
     }
     public virtual void Refresh(int number)
     {
 
-        if (weapon.isEnable)
+/*        if (weapon.enabled)
         {
             text.text = weapon.name;
             icons.sprite = weapon.icon;
@@ -52,7 +52,7 @@ public class Slot : MonoBehaviour
         {
             text.text = "";
             icons.sprite = null;
-        }
+        }*/
         if (hasNumber)
         {
             this.number.text = "x" + number;

@@ -48,13 +48,9 @@ public class PlayerBehavior : MonoBehaviour
     public GameObject CarryObject;
     private Vector2 attractedVector;
     private float coefWhenAttracted;
-    private List<RespawnPos> listSavePos;
+
     private int indexListSavePos;
-    public struct RespawnPos
-    {
-        public float time;
-        public Vector2 position;
-    }
+
     public GameObject A, B;
     public  bool isAttracted { get; set; }
     public Vector2 positionToRespawn { get; set; }
@@ -62,24 +58,12 @@ public class PlayerBehavior : MonoBehaviour
 
     public float delayBetweenItemUse;
     private float timerDelayBetweenItemUse;
+
+    private Vector2 currentDirection;
+
     // Start is called before the first frame update
     #region position
-    public bool LookDown()
-    {
-        return animator.GetFloat("MoveY") == -1;
-    }
-    public bool LookUp()
-    {
-        return animator.GetFloat("MoveY") == 1;
-    }
-    public bool LookLeft()
-    {
-        return animator.GetFloat("MoveX") == -1;
-    }
-    public bool LookRight()
-    {
-        return animator.GetFloat("MoveX") == 1;
-    }
+
 
     internal void SetAttractedVector(Vector2 normalized, float coefWhenAttracted)
     {
@@ -114,58 +98,6 @@ public class PlayerBehavior : MonoBehaviour
 
 
     #region move
-    private void MoveCharacter()
-    {
-
-        if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow))
-        {
-            oldPosition = transform.position;
-            moveX = 0.0f;
-            moveY = 0.0f;
-            playMovement = true;
-            animator.SetBool("IsMoving", true);
-
-
-            if (Input.GetKey(KeyCode.DownArrow))
-            {
-                moveY = -1.0f;
-            }
-            if (Input.GetKey(KeyCode.UpArrow))
-            {
-                moveY = 1.0f;
-            }
-            if (Input.GetKey(KeyCode.LeftArrow))
-            {
-                moveX = -1.0f;
-            }
-            if (Input.GetKey(KeyCode.RightArrow))
-            {
-                moveX = 1.0f;
-            }
-        }
-        else
-        {
-            animator.SetBool("IsMoving", false);
-        }
-            animator.SetFloat("MoveY", moveY);
-            animator.SetFloat("MoveX", moveX);
-    }
-
-    public void ReplacePlayer()
-    {
-        if (smoothVectorMovement == Vector2.zero && CanMove)
-        {
-            float x = Mathf.Round(transform.position.x);
-            float y = Mathf.Round(transform.position.y );
-            transform.position = new Vector3(x, y, transform.position.z);
-           // GetComponent<Rigidbody2D>().MovePosition();
-        }
-    }
-
-    public void SlideToPosition(Vector2 position)
-    {
-        GetComponent<Rigidbody2D>().MovePosition(transform.position + new Vector3(position.x, position.y, transform.position.z));
-    }
     #endregion
 
     #region lifetime
@@ -174,18 +106,13 @@ public class PlayerBehavior : MonoBehaviour
         CanMove = true;
         moveX = 0.0f;
         moveY = 0.0f;
-        GameVariables.Instance.player = this;
-        currentLifePoint = initialLifePoint;
+        GameVariables.Instance.player = GetComponent<BrainBehavior>();
+
         playMovement = false;
         oldPosition = Vector3.zero;
         CarryObject = null;
         attractedVector = Vector2.zero;
-        indexListSavePos = 0;
-        listSavePos = new List<RespawnPos>();
-        for(int i = 0; i < 5; i++)
-        {
-            listSavePos.Add(new RespawnPos());
-        }
+     
         timerDelayBetweenItemUse = 0;
     }
 
@@ -208,7 +135,7 @@ public class PlayerBehavior : MonoBehaviour
     {
         GameStateManager.Instance.OnGameStateChanged -= OnGameStateChanged;
     }
-    // Update is calle
+    // Update is called
     void Start()
     {
         animator = GetComponent<Animator>();
@@ -223,12 +150,7 @@ public class PlayerBehavior : MonoBehaviour
 
         if (CanMove && !GetBoolAnimator("isJumping"))
         {
-            RespawnPos rp = listSavePos[indexListSavePos];
-            rp.time = Time.realtimeSinceStartup;
-            rp.position = transform.position;
-            listSavePos[indexListSavePos] = rp;
-            indexListSavePos++;
-            if (indexListSavePos >= 5) indexListSavePos = 0;
+         
         }
 
         if(GetBoolAnimator("isJumping") || GetBoolAnimator("isInLava")  || GetBoolAnimator("isFalling"))
@@ -241,7 +163,6 @@ public class PlayerBehavior : MonoBehaviour
 
         if (CanMove)
         {
-            MoveCharacter();
             UseItem(KeyCode.A, objectA, A);
             UseItem(KeyCode.B, objectB, B);
         }
@@ -253,17 +174,11 @@ public class PlayerBehavior : MonoBehaviour
         if (!animator.GetBool("IsMoving"))
         {
             animator.SetBool("IsPushing", false);
-            ReplaceDirection();
         }
 
         if (CanMove && !GameVariables.Instance.cameraSwipe && animator.GetBool("IsMoving") && playMovement && !isPushBack && !isAttracted)
         {
-            Vector3 newPosition = transform.position + ((new Vector3(moveX, moveY, 0)  + (Vector3)smoothVectorMovement ).normalized * characterSpeed )/* Time.deltaTime)*/;
 
-            newPosition.x = Mathf.Round(newPosition.x);
-            newPosition.y = Mathf.Round(newPosition.y);
-           // transform.position = newPosition;
-            GetComponent<Rigidbody2D>().MovePosition(newPosition);
             playMovement = false;
         }
         else if (isPushBack && !GetBoolAnimator("isInLava"))
@@ -290,51 +205,33 @@ public class PlayerBehavior : MonoBehaviour
 
     private void UseItem(KeyCode a1, GameObject objectA, GameObject A)
     {
-        if (Input.GetKey(a1) && timerDelayBetweenItemUse >= delayBetweenItemUse)
+/*        if (Input.GetKey(a1) && timerDelayBetweenItemUse >= delayBetweenItemUse && objectA == null)
         {
-            if (objectA == null && A.GetComponent<CarryWeapon>() == null && A.GetComponent<EmptyWeapon>() == null)
+            //On active l'OBJECT instancié
+            if (A.GetComponent<CarryWeapon>() == null && A.GetComponent<EmptyWeapon>() == null)
             {
                 objectA = Instantiate(A, transform);
                 // objectA.transform.parent = gameObject.transform;
                 objectA.GetComponent<BaseWeapon>().Activate(this);
-                timerDelayBetweenItemUse = 0;
             }
-            else if (objectA == null)
+            //On Active un EFFET.
+            else
             {
                 A.GetComponent<BaseWeapon>().Activate(this);
-                timerDelayBetweenItemUse = 0;
             }
-        }
+            timerDelayBetweenItemUse = 0;
+
+        }*/
     }
 
-    private void LateUpdate()
-    {
-        //transform.position =new Vector2(Mathf.Round(transform.position.x), Mathf.Round(transform.position.y));
-    }
     private void CheckIfCanMove()
     {
-        bool t = !GameVariables.Instance.cameraSwipe &&!animator.GetBool("isGrabbing") && !animator.GetBool("isAttack") && !animator.GetBool("UseWeapon") && !animator.GetBool("isFalling") && !animator.GetBool("isInLava");
+        bool t =  !GameVariables.Instance.StopPlayer && !animator.GetBool("isGrabbing") && !animator.GetBool("isAttack") && !animator.GetBool("UseWeapon") && !animator.GetBool("isFalling") && !animator.GetBool("isInLava");
         CanMove = t;
     }
     public Vector2 GetVectorMove()
     {
         return new Vector2(moveX, moveY);
-    }
-    public void ReplaceDirection()
-    {
-        if (moveX != 0 && moveY != 0)
-        {
-            if (animator.GetFloat("MoveY") <= -1 || animator.GetFloat("MoveY") >= 1)
-            {
-                animator.SetFloat("MoveX", 0);
-                moveX = 0;
-            }
-            else
-            {
-                animator.SetFloat("MoveY", 0);
-                moveY = 0;
-            }
-        }
     }
     public void ChangePlayerOrientation(Vector2 v)
     {
@@ -344,40 +241,7 @@ public class PlayerBehavior : MonoBehaviour
     #endregion
 
     #region Damage
-    public void GiveDamageAndRespawn(int damage)
-    {
-        if (!isFlying && CanMove)
-        {
-            if (timeRecoveryTimer <= 0)
-            {
-                currentLifePoint -= damage;
-                GameVariables.Instance.inventory.SetHeart(currentLifePoint);
-            }
-            timeRecoveryTimer = timeRecovery;
-            RespawnPos respawnPoint = listSavePos[0];
-            foreach(RespawnPos rp in listSavePos)
-            {
-                if (rp.time < respawnPoint.time) respawnPoint = rp;
-            }
 
-            transform.position = respawnPoint.position;
-            isAttracted = false;
-            GameVariables.Instance.player.SetBoolAnimator("isFalling", false);
-        }
-    }
-
-    public void GetDamage(int dmg, Transform target)
-    {
-        if (timeRecoveryTimer <= 0 && !isFlying && !GetBoolAnimator("isFalling") && CanMove)
-        {
-            isPushBack = true;
-            currentLifePoint -= dmg;
-            timeRecoveryTimer = timeRecovery;
-            GameVariables.Instance.gameAudioSource.PlayOneShot(hitSound);
-            GameVariables.Instance.inventory.SetHeart(currentLifePoint);
-            targetEnemy = target.position;
-        }
-    }
     #endregion
 
     public void SetBoolAnimator(string variableName, bool value)
@@ -401,39 +265,21 @@ public class PlayerBehavior : MonoBehaviour
 
     public void OnGameStateChanged(GameStateManager.GameState gameState)
     {
+
+        if(gameState == GameStateManager.GameState.SwipeCamera)
+        {
+            GameVariables.Instance.StopPlayer = true;
+        }
+
         if (gameState == GameStateManager.GameState.Pause || gameState == GameStateManager.GameState.Talking) enabled = false;
-        else if (gameState == GameStateManager.GameState.Playing) enabled = true;
-    }
-
-    public void sinkPlayer(int dmg, float time)
-    {
-        if (!isFlying)
+        if (gameState == GameStateManager.GameState.Playing)
         {
-            if (timeRecoveryTimer <= 0)
-            {
-                currentLifePoint -= dmg;
-                GameVariables.Instance.inventory.SetHeart(currentLifePoint);
-            }
-            timeRecoveryTimer = timeRecovery;
-
-
-            CanMove = false;
-            StartCoroutine(WhenPlayerSink(time));
+            enabled = true;
+            GameVariables.Instance.StopPlayer = false;
         }
     }
 
-    public IEnumerator WhenPlayerSink(float time)
-    {
-        RespawnPos respawnPoint = listSavePos[0];
-        foreach (RespawnPos rp in listSavePos)
-        {
-            if (rp.time < respawnPoint.time) respawnPoint = rp;
-        }
-        yield return new WaitForSeconds(time);
-        transform.position = respawnPoint.position;
-        GameVariables.Instance.player.SetBoolAnimator("isInLava", false);
-        CanMove = true;
-    }
+
     #region DEBUG
 #if UNITY_EDITOR
     private void OnDrawGizmos()

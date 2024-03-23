@@ -28,6 +28,8 @@ TagManager:
   - Water
   - DeepWater
   - EnnemyWall
+  - Map
+  - Referentiel
   layers:
   - Default
   - TransparentFX
@@ -44,7 +46,7 @@ TagManager:
   - Camera
   - InvisiblePlayer
   - IgnoreWeapon
-  - 
+  - Map
   - 
   - 
   - 

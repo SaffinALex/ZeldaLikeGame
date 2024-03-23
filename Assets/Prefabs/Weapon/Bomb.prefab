@@ -135,6 +135,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8839852442234477414}
   - component: {fileID: 8839852442234477408}
+  - component: {fileID: 5476882102667940665}
   - component: {fileID: 8839852442234477415}
   - component: {fileID: 2320610310431488022}
   - component: {fileID: 1909395446102099217}
@@ -154,7 +155,7 @@ Transform:
   m_GameObject: {fileID: 8839852442234477413}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 33.933876, y: -16.862823, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 16, y: 16, z: 1}
   m_Children:
   - {fileID: 6921023540884925255}
   m_Father: {fileID: 0}
@@ -172,24 +173,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e7fe0b2a2bdf07e44bcef193f50415fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 15
-  icon: {fileID: -5397825737144384376, guid: b4b3334591c245d4bbd18d150c03978d, type: 3}
-  name: Bomb
-  isEnable: 1
-  needToBeInstantiate: 0
-  distance: 40
-  speed: 100
-  arcHeight: 16
-  numeratorAfterBouncing: 1.5
-  numberOfBounce: 2
+  bombCarryBehavior: {fileID: 5476882102667940665}
   timeBeforeExplosion: 5
-  explosionDuration: 1
-  hitGroundSound: {fileID: 8300000, guid: ea4436a8cbc6a484b8a166ce1d2d6a12, type: 3}
-  explosion: {fileID: 8300000, guid: f88e8e80c9ddad84f9e24a1110db5221, type: 3}
+  explosionDuration: 2
+  explosion: {fileID: 8300000, guid: 78afec15c02af9e4aa7a09a78ea8feb2, type: 3}
+--- !u!114 &5476882102667940665
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8839852442234477413}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 542c60fb566b34c43a597e1975cd736c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  numberOfBounce: 2
+  isDestroyedOnGround: 0
+  distance: 16
+  speed: 60
+  arcHeight: 1
+  numeratorAfterBouncing: 1.1
+  hitGroundSound: {fileID: 8300000, guid: 621cd73142cf4cf43b24a33901b69b4a, type: 3}
   shadowPos: {fileID: 5510016880960466614}
-  throwObject: {fileID: 8300000, guid: e91c882baaa9fdb4fa573ec256e4385d, type: 3}
-  carryBombAudio: {fileID: 8300000, guid: 6e7b6dad993f192429b85d48db404097, type: 3}
-  impossibleAudio: {fileID: 8300000, guid: 72990b17983df9d4bb44647b6660a3f4, type: 3}
+  throwObject: {fileID: 8300000, guid: 621cd73142cf4cf43b24a33901b69b4a, type: 3}
+  carryAudioSong: {fileID: 8300000, guid: 621cd73142cf4cf43b24a33901b69b4a, type: 3}
 --- !u!212 &8839852442234477415
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -229,14 +238,14 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 3
+  m_SortingOrder: 4
   m_Sprite: {fileID: -5397825737144384376, guid: b4b3334591c245d4bbd18d150c03978d,
     type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 16, y: 16}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -279,7 +288,7 @@ BoxCollider2D:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
     oldSize: {x: 16, y: 16}
-    newSize: {x: 1, y: 1}
+    newSize: {x: 16, y: 16}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0

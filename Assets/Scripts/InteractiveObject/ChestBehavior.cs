@@ -33,14 +33,14 @@ public class ChestBehavior : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D collision)
     {
-        if (collision.CompareTag("PlayerFeet") && !isOpen)
+        if (collision.CompareTag("PlayerBody") && !isOpen)
         {
-            playerInRange = true;
+            playerInRange = GameVariables.instance.player.GetColliderModule().isFacingInteractive(gameObject, collision.transform.position);
         }
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.CompareTag("PlayerFeet"))
+        if (collision.CompareTag("PlayerBody"))
         {
             playerInRange = false;
         }
@@ -74,16 +74,13 @@ public class ChestBehavior : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space) && playerInRange && !isOpen && !text.gameObject.activeInHierarchy)
         {
-            if (CheckIfCanBeOpen())
-            {
+                Debug.Log(gameObject.GetInstanceID());
+                isOpen = true;
                 GameStateManager.Instance.SetState(GameStateManager.GameState.Talking);
                 initialText +=  " " + earnItem.name;
                 GetComponent<Animator>().SetBool("isOpen", true);
                 GameVariables.Instance.gameAudioSource.PlayOneShot(openChest);
                 GameVariables.Instance.pauseGame = true;
-                isOpen = true;
-               
-            }
         }
         else if (GameVariables.Instance.dialogueBox.activeInHierarchy && playerInRange)
         {
@@ -98,7 +95,7 @@ public class ChestBehavior : MonoBehaviour
             {
                 GameVariables.Instance.dialogueBox.SetActive(true);
                 GameVariables.Instance.gameAudioSource.PlayOneShot(getItemMusic);
-                GameVariables.Instance.player.SetBoolAnimator("openChest", true);
+                GameVariables.Instance.player.GetAnimationModule().WhenPlayerOpenChest();
                 placeHolder.sprite = earnItem.GetComponent<SpriteRenderer>().sprite;
                 earnItem.GiveItem();
                 placeHolder.gameObject.transform.position = GameVariables.Instance.player.transform.position + new Vector3(0, 16, 0);
@@ -124,10 +121,10 @@ public class ChestBehavior : MonoBehaviour
         {
             if (displayText == initialText)
             {
-                    GameVariables.Instance.pauseGame = false;
+                GameVariables.Instance.pauseGame = false;
                 GameVariables.Instance.dialogueBox.SetActive(false);
                 GameStateManager.Instance.SetState(GameStateManager.GameState.Playing);
-                    dialogueIndex = 0;
+                dialogueIndex = 0;
                 
                 displayText = "";
                 text.text = "";
@@ -135,7 +132,7 @@ public class ChestBehavior : MonoBehaviour
                 lastLetterTime = 0;
                 timeLeft = 0;
                 GameVariables.Instance.gameAudioSource.PlayOneShot(nextDialogue);
-                GameVariables.Instance.player.SetBoolAnimator("openChest", false);
+                GameVariables.Instance.player.GetAnimationModule().WhenPlayerCloseChest();
                 placeHolder.gameObject.SetActive(false);
             }
             else
@@ -144,30 +141,6 @@ public class ChestBehavior : MonoBehaviour
                 timeLeft = 0;
 
             }
-        }
-    }
-    private bool CheckIfCanBeOpen()
-    {
-        Vector2 dir = (GameVariables.Instance.player.transform.position - transform.position).normalized;
-        if (dir.x <= -0.8)
-        {
-            return GameVariables.Instance.player.LookRight();
-        }
-        else if (dir.x >= 0.8)
-        {
-            return GameVariables.Instance.player.LookLeft();
-        }
-        else if (dir.y >= 0.8)
-        {
-            return GameVariables.Instance.player.LookDown();
-        }
-        else if (dir.y <= -0.8)
-        {
-            return GameVariables.Instance.player.LookUp();
-        }
-        else
-        {
-            return false;
         }
     }
 }
